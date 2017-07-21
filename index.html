@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Document</title>
+    <link rel="stylesheet" href="src/style.css">
+    <link rel="stylesheet" type="text/css"
+          href="http://yui.yahooapis.com/3.18.1/build/cssreset-context/cssreset-context-min.css">
+</head>
+<body>
+<header>
+    <!-- top nav start -->
+    <nav id="top_nav">
+        <div class="inner">
+            <ul id="menu-header1" class="menu">
+                <li id="menu-item-15101"
+                    class="menu-item menu-item-type-post_type menu-item-object-page menu-item-15101"><a
+                        href="http://forklog.com/about/">О проекте</a></li>
+                <li id="menu-item-15100"
+                    class="menu-item menu-item-type-post_type menu-item-object-page menu-item-15100"><a
+                        href="http://forklog.com/podderzhi-proekt-forklog/">Поддержи журнал ForkLog</a></li>
+            </ul>
+            <div id="lang_switch">
+                <a href="http://forklog.com">Русский</a>
+                <a href="http://forklog.net">English</a>
+            </div>
+        </div>
+    </nav>
+    <!-- top nav end -->
+
+    <!-- main nav start -->
+    <nav id="main_nav">
+        <div class="inner">
+            <a href="/" title="Домой"><img src="http://forklog.com/wp-content/themes/newForklog/img/logo.svg"></a>
+            <ul id="menu-header2" class="menu">
+                <li id="menu-item-15102"
+                    class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-15102"><a
+                        href="http://forklog.com/news/">Новости</a></li>
+                <li id="menu-item-15103"
+                    class="menu-item menu-item-type-taxonomy menu-item-object-category current-post-ancestor current-menu-parent current-post-parent menu-item-15103">
+                    <a href="http://forklog.com/obzory/">Обзоры</a></li>
+                <li id="menu-item-15104"
+                    class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-15104"><a
+                        href="http://forklog.com/article/">Статьи</a></li>
+                <li id="menu-item-15108"
+                    class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-15108"><a
+                        href="http://forklog.com/interview/">Интервью</a></li>
+                <li id="menu-item-20784"
+                    class="menu-item menu-item-type-taxonomy menu-item-object-category menu-item-20784"><a
+                        href="http://forklog.com/cards/">Карточки</a></li>
+                <li id="menu-item-20785"
+                    class="menu-item menu-item-type-post_type menu-item-object-page menu-item-20785"><a
+                        href="http://forklog.com/vakansii/">Работа</a></li>
+            </ul>
+            <div id="main_nav_tools">
+                <span id="call_subscribe" title="Подписаться на рассылку"><i class="fa fa-envelope-o"
+                                                                             aria-hidden="true"></i></span>
+                <span id="call_search" title="Поиск"><i class="fa fa-search" aria-hidden="true"></i></span>
+                <div id="main_nav_subscribe">
+                    <aside id="unisender_subscribe_form-7" class="widget unisender_form"><h2 class="widget-title">
+                        Подписаться</h2>
+                        <form name="unisender_subscribe_form-7" method="POST" id="unisender_subscribe_form"><input
+                                type="hidden" name="action" value="unisenderSubscribe"><label for="email">E-mail<span
+                                class="required"> *</span></label><br><input type="text" name="email" id="email"
+                                                                             placeholder="Введите E-mail"
+                                                                             required="required"><br><br><input
+                                type="submit" value="Подписаться"><img
+                                src="http://forklog.com/wp-admin/images/spinner.gif"
+                                style="margin-left: 10px; display: none;"></form>
+                    </aside>
+                </div>
+                <div id="main_nav_search">
+                    <form role="search" method="get" id="searchform" class="searchform" action="http://forklog.com/">
+                        <div>
+                            <label class="screen-reader-text" for="s">Найти:</label>
+                            <input type="text" value="" name="s" id="s" placeholder="Поиск">
+                            <input type="submit" id="searchsubmit" value="Поиск">
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </nav>
+    <!-- main nav end -->
+
+    <!-- tags nav start -->
+    <nav id="tags_nav">
+        <div class="inner">
+            <ul id="menu-header_tags" class="menu">
+                <li id="menu-item-15109"
+                    class="menu-item menu-item-type-custom menu-item-object-custom menu-item-15109"><a
+                        href="/tag/blockchain/">#блокчейн</a></li>
+                <li id="menu-item-15111"
+                    class="menu-item menu-item-type-custom menu-item-object-custom menu-item-15111"><a
+                        href="/tag/banki/">#банки</a></li>
+                <li id="menu-item-16867"
+                    class="menu-item menu-item-type-custom menu-item-object-custom menu-item-16867"><a
+                        href="/tag/mnenie/">#мнения</a></li>
+                <li id="menu-item-25674"
+                    class="menu-item menu-item-type-custom menu-item-object-custom menu-item-25674"><a href="/tag/ico/">#ICO</a>
+                </li>
+                <li id="menu-item-15113"
+                    class="menu-item menu-item-type-custom menu-item-object-custom menu-item-15113"><a
+                        href="/tag/ethereum/">#Ethereum</a></li>
+                <li id="menu-item-26732"
+                    class="menu-item menu-item-type-custom menu-item-object-custom menu-item-26732"><a
+                        href="/tag/regulirovanie/">#регулирование</a></li>
+            </ul>
+            <span id="switch_content">Показывать по порядку</span>
+        </div>
+    </nav>
+    <!-- tags nav end -->
+
+</header>
+<main id="article_page">
+    <div class="inner">
+        <!-- aside start -->
+        <aside id="main_sidebar">
+
+            <!-- aside ticker start -->
+            <div class="sidebar_module" id="ticker_and_socials">
+                <div id="ticker_blk">
+                    <span id="btc_rate">2307.48$</span>
+                    <span id="eth_rate">0.0982 BTC</span>
+                </div>
+                <div id="socials_blk">
+                    <a href="https://www.facebook.com/forklog" target="_blank" rel="nofollow"><i class="fa fa-facebook"
+                                                                                                 aria-hidden="true"></i></a>
+                    <a href="https://vk.com/forklogcom" target="_blank" rel="nofollow"><i class="fa fa-vk"
+                                                                                          aria-hidden="true"></i></a>
+                    <a href="https://twitter.com/ForkLog" target="_blank" rel="nofollow"><i class="fa fa-twitter"
+                                                                                            aria-hidden="true"></i></a>
+                    <a href="https://plus.google.com/communities/113252363920903220646" target="_blank"
+                       rel="nofollow"><i class="fa fa-google-plus" aria-hidden="true"></i></a>
+                    <a href="https://www.reddit.com/r/BitRussia/" target="_blank" rel="nofollow"><i
+                            class="fa fa-reddit-alien" aria-hidden="true"></i></a>
+                    <a href="https://telegram.me/forklog" target="_blank" rel="nofollow"><i class="fa fa-paper-plane"
+                                                                                            aria-hidden="true"></i></a>
+                    <a href="/moon" id="to_the_moon" title="To the Moon"></a>
+                </div>
+            </div>
+            <!-- aside ticker end -->            <!-- aside banner start -->
+            <div class="textwidget sidebar_banner"><p><span id="ct_Anlo7p"></span></p>
+            </div>
+
+            <a class="sidebar_banner" href="http://bit.ly/2u0s1xM" target="_blank" rel="nofollow"><img
+                    src="http://findicons.com/files/icons/719/crystal_clear_actions/256/tux.png"></a>
+
+            <a class="sidebar_banner" href="https://goo.gl/NYxn3D" target="_blank" rel="nofollow"><img
+                    src="http://findicons.com/files/icons/719/crystal_clear_actions/256/tux.png"></a>
+
+            <a class="sidebar_banner" href="https://goo.gl/HTjLao" target="_blank" rel="nofollow"><img
+                    src="http://findicons.com/files/icons/719/crystal_clear_actions/256/tux.png"></a>
+
+
+            <!-- aside banner end -->
+        </aside>
+        <!-- aside end -->
+
+        <!-- article content start -->
+        <section id="article_content">
+            <h1>Обзор рынка ICO: стартапы токенизируют гемблинг, электроэнергию и логистику</h1>
+            <!-- article share start -->
+            <section id="article_share">
+                <a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a>
+                <a href="#"><i class="fa fa-vk" aria-hidden="true"></i></a>
+                <a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a>
+                <a href="#"><i class="fa fa-google-plus" aria-hidden="true"></i></a>
+            </section>
+            <!-- article share end -->
+            <div id="article_meta">
+                <div id="article_category"><a href="http://forklog.com/obzory/" rel="category tag">Обзоры</a></div>
+                <div id="article_date"><span>19.07.2017</span></div>
+            </div>
+            <p>Пора признать, что новость об очередном ICO в криптоиндустрии сегодня — едва ли событие. Каждый месяц
+                десятки проектов распродают свои токены, собирая на кошельках миллионы долларов в криптовалюте. Уже в
+                этом году рынок ICO увеличился более чем на <a
+                        href="http://forklog.com/obem-rynka-ico-v-2017-godu-prevysil-1-mlrd/" target="_blank"
+                        rel="noopener">миллиард</a> долларов, обогатив тех, кто правильно распорядился своими
+                криптоактивами. Безусловно, некоторые инвесторы потеряли свои средства, сделав неудачное вложение.
+                Однако вряд ли кто-то поспорит с тем, что на молодом волатильном рынке ключ к успеху — это
+                информация.<span id="more-28144"></span></p>
+            <p>ForkLog по долгу службы всегда находится в гуще событий и, в рамках экспериментальной рубрики, мы
+                предлагаем вниманию читателей дайджест проходящих в данный момент ICO. Обзор не содержит рекомендаций и
+                носит сугубо уведомительный характер.</p>
+            <p>Начнем с краудсейла <a href="https://dao.casino/" target="_blank" rel="noopener">Dao.casino</a>,
+                очередного проекта от игорной индустрии. В отличие от предшественников, Dao.casino — не просто
+                децентрализованное казино на блокчейне, а гемблинговый блокчейн-протокол, который позволит любому
+                пользователю запустить собственное децентрализованное казино. Краудсейл начался 29 июня и завершится
+                через 28 дней (или в момент достижения максимального порога кампании — $25 млн). К моменту написания
+                материала собрано уже более $16.6 млн, и у кампании есть шанс закончиться намного раньше.</p>
+            <p>Внутренние токены платформы называются BET и сегодня можно купить 1600 токенов за 1 ETH. Каждые несколько
+                дней токены дорожают, и к концу недели за 1 ETH разработчики предложат инвесторам уже 1500 BET. С
+                помощью токенов BET можно будет не только делать ставки в казино, но и зарабатывать на предоставлении
+                другим пользователям различных услуг — от генерации случайных чисел до спонсирования банкролла
+                пользовательских казино.</p>
+            <p>Краудсейл блокчейн-лотереи <a href="https://ico.trueflip.io/" target="_blank" rel="noopener">TrueFlip</a>
+                стартовал 28 июня и продлится до 28 июля или пока проект не соберет 6125 BTC. Один токен TFL можно
+                приобрести за 0.0005 BTC, но ранние инвесторы еще могут рассчитывать на небольшой бонус. TrueFlip уже
+                имеет работающий продукт — бета-версия платформы была запущена еще в апреле 2017 года. По утверждению
+                разработчиков, за это время услугами платформы воспользовалось несколько десятков тысяч людей. На
+                сегодняшний день проект собрал более $3 млн, что соответствует 1500 BTC и значительно превышает
+                минимальный заявленный порог.</p>
+            <p>Объявивший о старте ICO 21 июня <a href="https://skincoin.org/ico/" target="_blank" rel="noopener">проект
+                SkinCoin</a> планирует создать площадку для неофициальной торговли игровыми “скинами” популярных игр
+                платформы Steam. Краудсейл SkinCoin продлится ровно месяц, за этот период команда надеется собрать $10
+                млн. Инвестиции принимаются только в ETH. За 1 ETH инвестор сможет приобрести 6 тысяч SKINS. В данный
+                момент собрано более $2 млн.</p>
+            <p>До 31 июля продлится краудсейл еще одного проекта “от геймеров и для геймеров” <a
+                    href="https://neverdie.com/" target="_blank" rel="noopener">Neverdie</a>. Этот проект планирует
+                широкую интеграцию в экосистему игровой индустрии для упрощения монетизации и повышения ликвидности
+                любых внутриигровых активов с помощью криптовалюты. На момент написания материала инвесторы вложили в
+                проект более $1.8 млн.</p>
+            <p>Логистическая компания <a href="https://ico.a2b.direct/" target="_blank" rel="noopener">A2B Direct</a>,
+                редкий гость из реального сектора, проводит ICO для блокчейнизации бизнес-процессов, связанных с
+                грузоперевозками. Компания работает на рынке Восточной Европы, но в случае успешного краудсейла
+                планирует расширяться и на западный рынок. Кампания началась 12 июля и продлится ровно месяц. Тем
+                временем инвесторы вложили в ICO проекта $17 тысяч.</p>
+            <p>Еще один логистический проект <a href="https://immla.io/pre-ico/" target="_blank"
+                                                rel="noopener">IMMLA</a> в этом месяце проводит Pre-ICO. Цель кампании —
+                собрать 2,747 ЕТН (или примерно $412 тыс). За 11 дней до окончания Pre-ICO собрана четверть необходимой
+                суммы.</p>
+            <p>11 июля предварительную продажу токенов начал <a href="https://suretly.com/" target="_blank"
+                                                                rel="noopener">проект Suretly</a>. Разработчики
+                описывают Suretly как биржу народного поручительства и, видимо, планируют “уберизировать” рынок
+                микрозаймов. Пользователи платформы смогут быстро находить поручителей для займа, либо зарабатывать
+                криптовалюту, предлагая свои услуги в качестве поручителя. Краудсейл будет закрыт 11 августа или в
+                момент достижения верхнего порога в $10 млн. В данный момент собрано почти $1.5 млн.</p>
+            <p>Сервис облачного майнинга <a href="https://cryptonomos.com/promo" target="_blank" rel="noopener">Cryptonomos</a>
+                проводит двухмесячный краудсейл, который закончится 31 июля. В данный момент токен стоит $1.05.</p>
+            <p>Всего две недели осталось до окончания ICO <a href="https://suncontract.org/" target="_blank"
+                                                             rel="noopener">SunContract</a> — платформы, уберизирующей
+                рынок электроэнергии. SunContract создаст площадку, где независимые производители и потребители
+                электроэнергии смогут легко заключать сделки напрямую с помощью смарт-контрактов Ethereum. SunContract
+                уже собрал более $1.4 млн.</p>
+            <p>C 10 июля по 9 августа продлится ICO онлайн-фонда <a href="https://www.digitaldevelopersfund.com/ico/#"
+                                                                    target="_blank" rel="noopener">DDF</a>. Полученные
+                во время краудсейла токены должны дать инвесторам право на часть прибыли фонда. Сам фонд
+                специализируется как на инвестировании в криптовалюты, так и на более экзотических вложениях, как
+                покупка доменных имен. По мнению создателей фонда, доменные имена — недвижимость интернета. Верхняя
+                граница ICO установлена на 247,500 ETH. На данный момент собрано 3,850 ETH ($716 тысяч).</p>
+            <p>15 июля стартовал краудсейл платформы <a href="https://blockcat.io/tokensale/" target="_blank"
+                                                        rel="noopener">BlockCAT</a>. Разработчики BlockCAT предлагают
+                пользователям инфраструктурное решение на базе Ethereum для создания смарт-контрактов, включая довольно
+                сложные, без познаний в программировании.<br>
+                На данный момент проект собрал 4282 ETH (около $800 тысяч по текущему курсу).</p>
+            <p>Продолжается ICO спекулятивного “комьюнити-коина” <a href="https://www.dimcoin.io/" target="_blank"
+                                                                    rel="noopener">DimCoin</a>. DimCoin создает
+                разветвленную инфраструктуру финансовых сервисов для комьюнити и за 11 дней до окончания кампании собрал
+                уже $5 млн.</p>
+            <p>Сервис <a href="http://prover.io/#intro" target="_blank" rel="noopener">Prover</a> предлагает
+                блокчейн-решение верификации подлинности видео. Эта технология будет полезна в сферах страхования,
+                правоохранения и журналистики.<br>
+                Проект не афиширует свое Pre-ICO, так как уже ожидает вливаний от нескольких крупных инвесторов. Но до
+                29 июля вложить средства в проект сможет каждый желающий.</p>
+            <p>Отметим, что список краудсейлов, приведенный в этом обзоре, скорее всего, неполный, но включает в себя
+                все заметные, по мнению редакции, проекты. ForkLog воздерживается от оценочных суждений в отношении
+                идущих в данный момент ICO, но нам очень интересно услышать мнение читателей. Пожалуйста, делитесь своей
+                оценкой упомянутых проектов в комментариях.</p>
+            <p>Если рубрика будет пользоваться популярностью, ее продолжение читатели увидят через неделю. Тем временем
+                ForkLog будет неусыпно следит за развитием событий.</p>
+        </section>
+        <!-- article content end -->
+        <!-- subscribe start -->
+        <section id="article_subscribe">
+            <p>Подписаться на новости <span>Forklog</span></p>
+            &lt;
+            <aside id="unisender_subscribe_form-5" class="widget unisender_form"><h2 class="widget-title">
+                Подписаться</h2>
+                <form name="unisender_subscribe_form-5" method="POST" id="unisender_subscribe_form"><input type="hidden"
+                                                                                                           name="action"
+                                                                                                           value="unisenderSubscribe"><label
+                        for="email">E-mail<span class="required"> *</span></label><br><input type="text" name="email"
+                                                                                             id="email" placeholder=""
+                                                                                             required="required"><br><br><input
+                        type="submit" value="Подписаться"><img src="http://forklog.com/wp-admin/images/spinner.gif"
+                                                               style="margin-left: 10px; display: none;"></form>
+            </aside>
+        </section>
+        <!-- subscribe end -->
+
+        <!-- recent news start -->
+        <section id="recent_articles">
+            <p>Похожие материалы</p>
+            <ul>
+                <li><a href="http://forklog.com/v-moskve-sostoitsya-spetsialnyj-blokchejn-ivent-ico-eto-zakonno/"
+                       rel="bookmark" title="В Москве состоится специальный блокчейн-ивент “ICO — это законно?”">В
+                    Москве состоится специальный блокчейн-ивент “ICO — это законно?”</a></li>
+                <li><a href="http://forklog.com/v-rossii-sobirayutsya-legalizovat-ico/" rel="bookmark"
+                       title="В России собираются легализовать ICO">В России собираются легализовать ICO</a></li>
+                <li>
+                    <a href="http://forklog.com/izrailskij-startap-coindash-vzlomali-vo-vremya-provedeniya-ico-ushherb-sostavil-7-5-mln/"
+                       rel="bookmark"
+                       title="Израильский стартап CoinDash взломали во время проведения ICO: ущерб составил $7,5 млн">Израильский
+                        стартап CoinDash взломали во время проведения ICO: ущерб составил $7,5 млн</a></li>
+                <li>
+                    <a href="http://forklog.com/novyj-otchet-britanskih-issledovatelej-rasskazal-o-sostoyanii-del-na-rynke-kriptovalyut-i-ico/"
+                       rel="bookmark"
+                       title="Новый отчет британских исследователей рассказал о состоянии дел на рынке криптовалют и ICO">Новый
+                        отчет британских исследователей рассказал о состоянии дел на рынке криптовалют и ICO</a></li>
+                <li>
+                    <a href="http://forklog.com/suretly-dostigli-minimalnogo-poroga-v-1-5-mln-v-techenie-pervogo-dnya-ico/"
+                       rel="bookmark" title="Suretly достигли минимального порога в $1,5 млн в течение первого дня ICO">Suretly
+                        достигли минимального порога в $1,5 млн в течение первого дня ICO</a></li>
+                <li>
+                    <a href="http://forklog.com/tsenite-blizkih-otpravte-im-fuck-prilozhenie-dlya-ethereum-privleklo-30-tysyach-za-polchasa/"
+                       rel="bookmark"
+                       title="Цените близких — отправьте им FUCK: приложение для Ethereum привлекло $30 тысяч за полчаса">Цените
+                        близких — отправьте им FUCK: приложение для Ethereum привлекло $30 тысяч за полчаса</a></li>
+                <li><a href="http://forklog.com/startoval-token-sale-platformy-a2b-direct/" rel="bookmark"
+                       title="Стартовал Token Sale платформы A2B Direct">Стартовал Token Sale платформы A2B Direct</a>
+                </li>
+                <li><a href="http://forklog.com/kazanskij-servis-taksi-vyjdet-na-ico-c-tokenami-kuponami/"
+                       rel="bookmark" title="Казанский сервис такси выйдет на ICO c токенами-купонами">Казанский сервис
+                    такси выйдет на ICO c токенами-купонами</a></li>
+            </ul>
+        </section>
+        <!-- recent news end -->
+
+        <!-- tagline start -->
+        <section id="tagline">
+            Метки: <a href="http://forklog.com/tag/ico/" rel="tag">ico</a>, <a href="http://forklog.com/tag/gembling/"
+                                                                               rel="tag">гемблинг</a>, <a
+                href="http://forklog.com/tag/logistika/" rel="tag">логистика</a>, <a
+                href="http://forklog.com/tag/startapy/" rel="tag">стартапы</a></section>
+        <!-- tagline end -->
+
+
+        <!-- article bottom banner start -->
+        <section id="article_bottom_banner">
+
+            <div class="textwidget"><p><a href="http://bit.ly/2uJ1Mua" target="blank"><img style="margin-top: 10px;"
+                                                                                           src="http://forklog.com/wp-content/uploads/BStrz_AfBanner_ThemeNEWBTC_925x90.gif"></a>
+            </p>
+            </div>
+
+
+        </section>
+        <!-- article bottom banner end -->
+
+
+        <div id="disqus_thread">
+            <iframe id="dsq-app1" name="dsq-app1" allowtransparency="true" frameborder="0" scrolling="no" tabindex="0"
+                    title="Disqus" width="100%"
+                    src="https://disqus.com/embed/comments/?base=default&amp;f=forklog&amp;t_i=28144%20http%3A%2F%2Fforklog.com%2F%3Fp%3D28144&amp;t_u=http%3A%2F%2Fforklog.com%2Fobzor-rynka-ico-startapy-tokeniziruyut-gembling-elektroenergiyu-i-logistiku%2F&amp;t_e=%D0%9E%D0%B1%D0%B7%D0%BE%D1%80%20%D1%80%D1%8B%D0%BD%D0%BA%D0%B0%20ICO%3A%20%D1%81%D1%82%D0%B0%D1%80%D1%82%D0%B0%D0%BF%D1%8B%20%D1%82%D0%BE%D0%BA%D0%B5%D0%BD%D0%B8%D0%B7%D0%B8%D1%80%D1%83%D1%8E%D1%82%20%D0%B3%D0%B5%D0%BC%D0%B1%D0%BB%D0%B8%D0%BD%D0%B3%2C%20%D1%8D%D0%BB%D0%B5%D0%BA%D1%82%D1%80%D0%BE%D1%8D%D0%BD%D0%B5%D1%80%D0%B3%D0%B8%D1%8E%20%D0%B8%20%D0%BB%D0%BE%D0%B3%D0%B8%D1%81%D1%82%D0%B8%D0%BA%D1%83&amp;t_d=%D0%9E%D0%B1%D0%B7%D0%BE%D1%80%20%D1%80%D1%8B%D0%BD%D0%BA%D0%B0%20ICO%3A%20%D1%81%D1%82%D0%B0%D1%80%D1%82%D0%B0%D0%BF%D1%8B%20%D1%82%D0%BE%D0%BA%D0%B5%D0%BD%D0%B8%D0%B7%D0%B8%D1%80%D1%83%D1%8E%D1%82%20%D0%B3%D0%B5%D0%BC%D0%B1%D0%BB%D0%B8%D0%BD%D0%B3%2C%20%D1%8D%D0%BB%D0%B5%D0%BA%D1%82%D1%80%D0%BE%D1%8D%D0%BD%D0%B5%D1%80%D0%B3%D0%B8%D1%8E%20%D0%B8%20%D0%BB%D0%BE%D0%B3%D0%B8%D1%81%D1%82%D0%B8%D0%BA%D1%83&amp;t_t=%D0%9E%D0%B1%D0%B7%D0%BE%D1%80%20%D1%80%D1%8B%D0%BD%D0%BA%D0%B0%20ICO%3A%20%D1%81%D1%82%D0%B0%D1%80%D1%82%D0%B0%D0%BF%D1%8B%20%D1%82%D0%BE%D0%BA%D0%B5%D0%BD%D0%B8%D0%B7%D0%B8%D1%80%D1%83%D1%8E%D1%82%20%D0%B3%D0%B5%D0%BC%D0%B1%D0%BB%D0%B8%D0%BD%D0%B3%2C%20%D1%8D%D0%BB%D0%B5%D0%BA%D1%82%D1%80%D0%BE%D1%8D%D0%BD%D0%B5%D1%80%D0%B3%D0%B8%D1%8E%20%D0%B8%20%D0%BB%D0%BE%D0%B3%D0%B8%D1%81%D1%82%D0%B8%D0%BA%D1%83&amp;s_o=default&amp;l=#version=c6b02855124fa2d984872e6c7735db5f"
+                    style="width: 1px !important; min-width: 100% !important; border: none !important; overflow: hidden !important; height: 1205px !important;"
+                    horizontalscrolling="no" verticalscrolling="no"></iframe>
+            <iframe id="indicator-north" name="indicator-north" allowtransparency="true" frameborder="0" scrolling="no"
+                    tabindex="0" title="Disqus"
+                    style="width: 820px !important; border: none !important; overflow: hidden !important; top: 0px !important; min-width: 820px !important; max-width: 820px !important; position: fixed !important; z-index: 2147483646 !important; height: 0px !important; min-height: 0px !important; max-height: 0px !important; display: none !important;"></iframe>
+            <iframe id="indicator-south" name="indicator-south" allowtransparency="true" frameborder="0" scrolling="no"
+                    tabindex="0" title="Disqus"
+                    style="width: 820px !important; border: none !important; overflow: hidden !important; bottom: 0px !important; min-width: 820px !important; max-width: 820px !important; position: fixed !important; z-index: 2147483646 !important; height: 0px !important; min-height: 0px !important; max-height: 0px !important; display: none !important;"></iframe>
+        </div>
+
+
+    </div>
+</main>
+
+<footer>
+    <div class="inner">
+        <div class="col">
+            <p class="head">Копирование материалов</p>
+            <p>Свободное копирование и распространение материалов с сайта ForkLog разрешено только с указанием активной
+                ссылки на ForkLog как на источник. Указание ссылки также является обязательным при копировании
+                материалов в социальные сети или печатные издания. </p>
+        </div>
+        <div class="col">
+            <p class="head">О проекте</p>
+            <p>Журнал ForkLog - информационный ресурс о криптовалютах, блокчейне и децентрализованных технологиях. Мы
+                работаем для вас с 2014 года. <br>© 2017 </p>
+        </div>
+        <div class="col">
+            <div id="footer_socials_blk">
+                <a href="https://www.facebook.com/forklog" target="_blank" rel="nofollow"><i class="fa fa-facebook"
+                                                                                             aria-hidden="true"></i></a>
+                <a href="https://vk.com/forklogcom" target="_blank" rel="nofollow"><i class="fa fa-vk"
+                                                                                      aria-hidden="true"></i></a>
+                <a href="https://twitter.com/ForkLog" target="_blank" rel="nofollow"><i class="fa fa-twitter"
+                                                                                        aria-hidden="true"></i></a>
+                <a href="https://plus.google.com/communities/113252363920903220646" target="_blank" rel="nofollow"><i
+                        class="fa fa-google-plus" aria-hidden="true"></i></a>
+                <a href="https://www.reddit.com/r/BitRussia/" target="_blank" rel="nofollow"><i
+                        class="fa fa-reddit-alien" aria-hidden="true"></i></a>
+                <a href="https://telegram.me/forklog" target="_blank" rel="nofollow"><i class="fa fa-paper-plane"
+                                                                                        aria-hidden="true"></i></a>
+            </div>
+            <a href="/contacts/">Контакты</a>
+            <a href="/podderzhi-proekt-forklog/">Поддержать проект</a>
+        </div>
+    </div>
+</footer>
+
+
+    <div id="M103889ScriptRootC141665">
+        <div id="M103889PreloadC141665" style="display: none;">
+            Loading...
+        </div>
+        <script>
+            (function () {
+                var D = new Date(), d = document, b = 'body', ce = 'createElement', ac = 'appendChild', st = 'style', ds = 'display', n = 'none', gi = 'getElementById';
+                var i = d[ce]('iframe');
+                i[st][ds] = n;
+                d[gi]("M103889ScriptRootC141665")[ac](i);
+                try {
+                    var iw = i.contentWindow.document;
+                    iw.open();
+                    iw.writeln("<ht" + "ml><bo" + "dy></bo" + "dy></ht" + "ml>");
+                    iw.close();
+                    var c = iw[b];
+                }
+                catch (e) {
+                    var iw = d;
+                    var c = d[gi]("M103889ScriptRootC141665");
+                }
+                var dv = iw[ce]('div');
+                dv.id = "MG_ID";
+                dv[st][ds] = n;
+                dv.innerHTML = 141665;
+                c[ac](dv);
+                var s = iw[ce]('script');
+                s.async = 'async';
+                s.defer = 'defer';
+                s.charset = 'utf-8';
+                s.src = "./dist/pas-test.com.141665.js?t=" + D.getYear() + D.getMonth() + D.getDate() + D.getHours();
+                c[ac](s);
+            })();
+        </script>
+        <div id="MarketGidComposite141665" style="height: auto; overflow: visible;"></div>
+    </div>
+
+
+</body>
+</html>
