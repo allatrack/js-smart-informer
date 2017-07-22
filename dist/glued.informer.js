@@ -1,3 +1,87 @@
+"document" in self && ("classList" in document.createElement("_") && (!document.createElementNS || "classList" in document.createElementNS("http://www.w3.org/2000/svg", "g")) || !function (t) {
+    "use strict";
+    if ("Element" in t) {
+        var e = "classList", n = "prototype", i = t.Element[n], s = Object, r = String[n].trim || function () {return this.replace(/^\s+|\s+$/g, "")}, o = Array[n].indexOf || function (t) {
+                for (var e = 0, n = this.length; n > e; e++)if (e in this && this[e] === t)return e;
+                return -1
+            }, a = function (t, e) {this.name = t, this.code = DOMException[t], this.message = e}, c = function (t, e) {
+            if ("" === e)throw new a("SYNTAX_ERR", "An invalid or illegal string was specified");
+            if (/\s/.test(e))throw new a("INVALID_CHARACTER_ERR", "String contains an invalid character");
+            return o.call(t, e)
+        }, l = function (t) {
+            for (var e = r.call(t.getAttribute("class") || ""), n = e ? e.split(/\s+/) : [], i = 0, s = n.length; s > i; i++)this.push(n[i]);
+            this._updateClassName = function () {t.setAttribute("class", "" + this)}
+        }, u = l[n] = [], h = function () {return new l(this)};
+        if (a[n] = Error[n], u.item = function (t) {return this[t] || null}, u.contains = function (t) {return t += "", -1 !== c(this, t)}, u.add = function () {
+                var t, e = arguments, n = 0, i = e.length, s = !1;
+                do t = e[n] + "", -1 === c(this, t) && (this.push(t), s = !0); while (++n < i);
+                s && this._updateClassName()
+            }, u.remove = function () {
+                var t, e, n = arguments, i = 0, s = n.length, r = !1;
+                do for (t = n[i] + "", e = c(this, t); -1 !== e;)this.splice(e, 1), r = !0, e = c(this, t); while (++i < s);
+                r && this._updateClassName()
+            }, u.toggle = function (t, e) {
+                t += "";
+                var n = this.contains(t), i = n ? e !== !0 && "remove" : e !== !1 && "add";
+                return i && this[i](t), e === !0 || e === !1 ? e : !n
+            }, u.toString = function () {return this.join(" ")}, s.defineProperty) {
+            var f = {get: h, enumerable: !0, configurable: !0};
+            try {
+                s.defineProperty(i, e, f)
+            } catch (g) {
+                (void 0 === g.number || -2146823252 === g.number) && (f.enumerable = !1, s.defineProperty(i, e, f))
+            }
+        } else s[n].__defineGetter__ && i.__defineGetter__(e, h)
+    }
+}(self), function () {
+    "use strict";
+    var t = document.createElement("_");
+    if (t.classList.add("c1", "c2"), !t.classList.contains("c2")) {
+        var e = function (t) {
+            var e = DOMTokenList.prototype[t];
+            DOMTokenList.prototype[t] = function (t) {
+                var n, i = arguments.length;
+                for (n = 0; i > n; n++)t = arguments[n], e.call(this, t)
+            }
+        };
+        e("add"), e("remove")
+    }
+    if (t.classList.toggle("c3", !1), t.classList.contains("c3")) {
+        var n = DOMTokenList.prototype.toggle;
+        DOMTokenList.prototype.toggle = function (t, e) {return 1 in arguments && !this.contains(t) == !e ? e : n.call(this, t)}
+    }
+    t = null
+}());
+
+if (!Array.prototype.indexOf) {
+    Array.prototype.indexOf = function (searchElement, fromIndex) {
+        var k;
+        if (this == null) {
+            throw new TypeError('"this" is null or not defined');
+        }
+        var O = Object(this);
+        var len = O.length >>> 0;
+        if (len === 0) {
+            return -1;
+        }
+        var n = +fromIndex || 0;
+        if (Math.abs(n) === Infinity) {
+            n = 0;
+        }
+        if (n >= len) {
+            return -1;
+        }
+        k = Math.max(n >= 0 ? n : len - Math.abs(n), 0);
+        while (k < len) {
+            var kValue;
+            if (k in O && O[k] === searchElement) {
+                return k;
+            }
+            k++;
+        }
+        return -1;
+    };
+}
 /*eslint-env es6:false*/
 /*
  * Copyright (c) 2010 Arc90 Inc
@@ -883,6 +967,7 @@ Readability.prototype = {
                 // Move everything (not just elements, also text nodes etc.) into the container
                 // so we even include text directly in the body:
                 var kids = page.childNodes;
+
                 while (kids.length) {
                     this.log("Moving child out:", kids[0]);
                     topCandidate.appendChild(kids[0]);
@@ -1085,6 +1170,7 @@ Readability.prototype = {
                     }
                     return false;
                 });
+
                 return articleContent;
             }
         }
@@ -2095,7 +2181,7 @@ Readability.prototype = {
             textContent: textContent,
             length: textContent.length,
             excerpt: metadata.excerpt,
-            rootElement: articleContent.children[0].children[0]
+            rootElements: articleContent.children[0].children
         };
     }
 };
@@ -2131,17 +2217,17 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
     }
 
     var rootId = id;
-    var insertedElementId;
+    var marketGidCompositeId;
     var percentageFrom = _percentageFrom || 30;
     var percentageTo = _percentageTo || 60;
     var articleHeight = 0;
     var articleParsed;
-    var articleInDOM;
+    var article;
     var informerRootDiv;
     var offsetHeightFrom;
     var offsetHeightTo;
 
-    function _initInformerRootDiv() {
+    function _initMarketGidCompositeRootDiv() {
 
         informerRootDiv = document.createElement('div');
         informerRootDiv.id = 'MarketGidCompositeRoot' + rootId;
@@ -2303,21 +2389,28 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
         });
     }
 
-    function _getArticle() {
+    function _findRealArticleInDOM(node){
 
-        if (!articleParsed.rootElement.id) {
-            throw Error('Article root element id is not specified')
-        }
+        // try to find article body by id
+        if (node['id']) {
+            return document.getElementById(node['id']);
 
-        try {
-            articleInDOM = document.getElementById(articleParsed.rootElement.id)
-        } catch (e) {
-            console.error(e);
-            throw new Error(e);
+            // try to find article body by css class
+        } else if (node.classList && node.classList.length) {
+
+            var classes = [];
+            [].forEach.call(node.classList, function (className) {
+                classes.push(className);
+            });
+
+            return document.getElementsByClassName(classes.join('.'));
+
+        } else {
+            return node.parentNode ? _findRealArticleInDOM(node.parentNode) : null;
         }
     }
 
-    function _getParsedArticle() {
+    function _parseArticle() {
 
         // Readability's parse() works by modifying the DOM.
         // This removes some elements in the web page.
@@ -2325,6 +2418,11 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
         // document object while creating a Readability object.
         var loc = document.location;
 
+        /**
+         * Parse and get copy of the article from real DOM
+         * 
+         * @type {object} articleParsed - copy of the article from real DOM
+         */
         articleParsed = new Readability({
             spec: loc.href,
             host: loc.host,
@@ -2332,209 +2430,191 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
             scheme: loc.protocol.substr(0, loc.protocol.indexOf(":")),
             pathBase: loc.protocol + "//" + loc.host + loc.pathname.substr(0, loc.pathname.lastIndexOf("/") + 1)
         }, document.cloneNode(true)).parse();
+
+        article = _findRealArticleInDOM(articleParsed.rootElements[0]);
+        
+        if (!article) {
+            throw new Error('Article In DOM not recognized');
+        }
     }
 
-    /**
-     * Check block
-     * @param element
-     * @returns {boolean}
-     * @private
-     */
-    function _isSuitable(element) {
-
-        var suitable = true;
-
-        ['img', 'table', 'iframe', 'h1', 'h2', 'h3', 'h4', 'h5'].forEach(function (tag) {
-            (element.tagName === tag) && (suitable = false);
-        });
-
-        // element can contain backgroundImage - check it
-        (suitable && element.style.backgroundImage !== '') && (suitable = false);
-
-        return suitable;
+    function _insert(element, _before) {
+        
+        var composedDiv = document.getElementById(marketGidCompositeId);
+        var before = _before || false;
+        composedDiv.parentNode.removeChild(composedDiv);
+        element.parentNode.insertBefore(informerRootDiv, before ? element : element.nextSibling);
+        informerRootDiv = document.getElementById(informerRootDiv.id);
+        informerRootDiv.appendChild(composedDiv);
+        inserted = true;
     }
 
-    /**
-     * Check if block can be paste
-     *
-     * @param element - Element
-     * @returns {boolean}
-     * @private
-     */
-    function _canInsertToBlock(element) {
+    var cumulativeGlobal = 0;
+    var inserted = false;
+    var cursor = {};
 
-        var result = true;
+    Object.defineProperties(cursor, {
+        beforeGoal: {get: function () {return cumulativeGlobal === 0 || cumulativeGlobal <= offsetHeightFrom;}},
+        neededGoal: {get: function () {return cumulativeGlobal >= offsetHeightFrom && cumulativeGlobal <= offsetHeightTo;}},
+        afterGoal: {get: function () {return cumulativeGlobal >= offsetHeightTo || cumulativeGlobal <= articleHeight;}}
+    });
 
-        if (element.children && element.children.length > 0) {
-            [].forEach.call(element.children, function (e) { result = _canInsertToBlock(e); });
+    function _getRealHeight(_element) {
+
+        var _elementClientHeight = _element.clientHeight;
+
+        if (_elementClientHeight) {
+            return _elementClientHeight
+        }
+
+        if (!_element.children) {
+            return _elementClientHeight;
         } else {
-            result = _isSuitable(element);
-        }
+            [].forEach.call(_element.children, function (node) {
 
-        return result;
-    }
-
-    function _insertBefore(element) {
-
-        try {
-            // вставить перед текушим элементом
-            var composedDiv = document.getElementById(insertedElementId);
-
-            // remove old MarketGidComposite
-            composedDiv.parentNode.removeChild(composedDiv);
-
-            // paste informer root
-            element.parentNode.insertBefore(informerRootDiv, element);
-
-            // paste MarketGidComposite to the informer root
-            informerRootDiv = document.getElementById(informerRootDiv.id);
-            informerRootDiv.appendChild(composedDiv);
-
-        } catch (e) {
-            console.error(e);
-        }
-
-    }
-
-    function _insertAfter(element) {
-
-        try {
-            // вставить перед текушим элементом
-            var composedDiv = document.getElementById(insertedElementId);
-
-            // remove old MarketGidComposite
-            composedDiv.parentNode.removeChild(composedDiv);
-
-            // paste informer root
-            element.parentNode.insertBefore(informerRootDiv, element.nextSibling);
-
-            // paste MarketGidComposite to the informer root
-            informerRootDiv = document.getElementById(informerRootDiv.id);
-            informerRootDiv.appendChild(composedDiv);
-
-        } catch (e) {
-            console.error(e);
-        }
-
-    }
-
-    // Рассматриваем Element - для кажого ребенка - смотрим его высоту
-    // если высота в начальной границы <30% - переходим к
-    // следующему ребенку и добавляем в кумулятивную сумму значение текущего ребенка
-
-    // если высота в начальной границы >60% - берем первый
-    // дочерний элемент от рассмартиваемого и в нем
-    // производим дольнейший поиск
-
-    // если высота в пределах 30 <= h <= 60 - разбираем блок
-
-    // Разбор блока - берем все элементы разбираемого блока и смотрим всех его детей
-    //
-    // клонирование кумулятивной суммы для того чтобы делать подсчеты
-    // по дочерним элементам и в случае невозможности
-    // вставки - перейти на уровень выше и попробовать со
-    // старой кумулятивной суммы продолжить поиск блока
-
-    // каждый ребенок рассматривается как кандидат для вставки информера
-    // в случа если:
-    // Если в диапазоне 10-20% статьи размещен длинный и неразрывный абзац текста,
-    // мы двигаемся выше диапазона (от 10% к 1%) и ищем разрыв абзацев.
-    // Если это оказался первый абзац - показываем виджет над
-    // между заголовком и первым абзацем.
-
-    // Если в диапазоне 10-20% статьи размещена картинка,
-    // или видео - показываем виджет под картинкой. Важно,
-    // что бы при этом у блока с виджетом был отступ от картинки.
-    function _Create(_element) {
-        var cumulativeLocal = 0;
-
-        // Рассматриваем Element - для кажого ребенка - смотрим его высоту
-        // если высота в начальной границы <30% - переходим к
-        // следующему ребенку и добавляем в кумулятивную сумму значение текущего ребенка
-        for (var i = 0; i < _element.children.length; i++) {
-
-            var child = _element.children[i];
-
-
-            // если высота в начальной границы >60% - берем первый
-            // дочерний элемент от рассмартиваемого и в нем
-            // производим дольнейший поиск
-            if (child.clientHeight >= offsetHeightFrom){
-
-                if (child.children && child.children.length) {
-                    console.log('pasteIfMore60');
-                    _Create(child);
-                    break;
+                if (node.children) {
+                    _elementClientHeight = _getRealHeight(node);
                 } else {
-                    throw new Error('Cant parse page to paste MG Smart informer');
+                    _elementClientHeight = node.clientHeight;
                 }
-            }
+            });
+        }
 
-            cumulativeLocal += child.clientHeight;
+        return _elementClientHeight;
+    }
 
-            // если высота в начальной границы <30% - переходим к
-            // следующему ребенку и добавляем в кумулятивную сумму значение текущего ребенка
-            if (cumulativeLocal <= offsetHeightFrom) {
-                continue;
-            }
-
-            if (cumulativeLocal >= offsetHeightFrom && cumulativeLocal <= offsetHeightTo) {
-                // Если в диапазоне 10-20% статьи размещен длинный и неразрывный абзац текста,
-                // мы двигаемся выше диапазона (от 10% к 1%) и ищем разрыв абзацев.
-                // Если это оказался первый абзац - показываем виджет над
-                // между заголовком и первым абзацем.
-                if (cumulativeLocal > offsetHeightTo) {
-                   _insertBefore(child);
-                    break;
-                }
-
-                _insertAfter(child);
-                break;
-            }
-
+    function _createIntoParentSibling(_el) {
+        if (_el.parentNode.children.length > 1) {
+            _create(_el.nextSibling);
+        } else {
+            _createIntoParentSibling(_el.parentNode.nextSibling);
         }
     }
 
-    /**
-     * Find appropriate place in article, and paste Informer Div to it
-     *
-     * @param _insertedElementId - ID of the element that will be moved to appropriate plase
-     * @private
-     */
-    function _create(_insertedElementId) {
+    function _create(_element) {
 
-        insertedElementId = _insertedElementId;
+        if (inserted) {
+            return
+        }
 
-        if (!articleInDOM.children) {
+        var nodeClientRealHeight = _element.clientHeight == 0
+            ? _getRealHeight(_element)
+            : _element.clientHeight;
+
+
+        if (nodeClientRealHeight === 0) {
+            return;
+        }
+
+        cumulativeGlobal += nodeClientRealHeight;
+
+        if (cursor.beforeGoal) {
+            return;
+        }
+
+        if (cursor.neededGoal) {
+
+            if (['TR', 'TD', 'THEAD', 'TBODY', 'TFOOTER', 'TABLE'].indexOf(_element.tagName) != -1) {
+
+                function _getTableNode(_element) {
+                    return (_element.parentNode && _element.parentNode.tagName !== 'TABLE')
+                        ? _getTableNode(_element.parentNode)
+                        : _element.parentNode;
+                }
+
+                _insert(_getTableNode(_element));
+                return;
+            }
+
+            if (_element.tagName === 'LI') {
+                _insert(_element.parentNode);
+                return;
+            }
+
+            if (['IFRAME', 'IMG', 'FIGURE', 'BLOCKQUOTE', 'PRE'].indexOf(_element.tagName) != -1) {
+                _insert(_element);
+                return;
+            }
+
+            _insert(_element);
+            return;
+        }
+
+        if (cursor.afterGoal) {
+            
+            cumulativeGlobal -= nodeClientRealHeight;
+
+            if (_element.children && _element.children.length) {
+
+                [].forEach.call(_element.children, function (_e) {
+                    _create(_e);
+                });
+
+            } else {
+                _createIntoParentSibling(_element)
+            }
+        }
+    }
+
+    function _initiateCreating(_marketGidCompositeID) {
+
+        if (!_marketGidCompositeID){
+            throw new Error('_marketGidCompositeID must be specified');
+        }
+        
+        marketGidCompositeId = _marketGidCompositeID;
+
+        if (!article.children && !article.length) {
             throw new Error('Article cant be without any children');
         }
 
         (articleHeight === 0) && _calculateArticleHeight();
 
-        _Create(articleInDOM)
-    }
+        // console.log(articleHeight, offsetHeightFrom, offsetHeightTo);
 
+        if (article.length) {
+            [].forEach.call(article, function (article) {
+                [].forEach.call(article.children, function (_e) {
+                    _create(_e)
+                });
+            });
+        } else {
+            [].forEach.call(article.children, function (_e) {
+                _create(_e)
+            });
+        }
+    }
 
     function _calculateArticleHeight() {
         articleHeight = 0;
-        [].forEach.call(articleInDOM.children, function (e) { articleHeight += e.clientHeight; });
+
+        if (article.length) {
+
+            [].forEach.call(article, function (article) {
+                [].forEach.call(article.children, function (e) {
+                    articleHeight += e.clientHeight;
+                });
+            });
+        } else {
+
+            [].forEach.call(article.children, function (e) {
+                articleHeight += e.clientHeight; 
+            });
+        }
+
         offsetHeightFrom = articleHeight * percentageFrom / 100;
         offsetHeightTo = articleHeight * percentageTo / 100;
     }
 
-    // init SmartInformerCreator
-    _initInformerRootDiv();
-    _getParsedArticle();
-    _getArticle();
+    _initMarketGidCompositeRootDiv();
+    _parseArticle();
     _calculateArticleHeight();
 
-    // give public API
+    // give public API method
     return {
-        create: _create
+        create: _initiateCreating
     }
 }
-
-
 
 
 

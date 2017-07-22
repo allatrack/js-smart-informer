@@ -2095,7 +2095,7 @@ Readability.prototype = {
             textContent: textContent,
             length: textContent.length,
             excerpt: metadata.excerpt,
-            rootElement: articleContent.children[0].children[0]
+            rootElement: articleContent.children[0].children
         };
     }
 };

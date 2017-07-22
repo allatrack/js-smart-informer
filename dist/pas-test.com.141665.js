@@ -459,11 +459,11 @@ MarketGidBaseBlockC141665 = function (root_id, DR, fallback, containerId) {
                 var smartInformerScript = parent.window.document.createElement('script');
                 smartInformerScript.type = 'text/javascript';
                 smartInformerScript.charset = 'utf-8';
-                smartInformerScript.src = "../../dist/glued.informer.js";
+                smartInformerScript.src = "http://localhost/dist/glued.informer.js";
                 (self.realRoot != undefined ? self.realRoot : self.root).parentNode.appendChild(smartInformerScript);
 
                 smartInformerScript.onload = function() {
-                    var mGInformer = new parent.window.SmartInformerCreator(self.id, 30, 50);
+                    var mGInformer = new parent.window.SmartInformerCreator(self.id, 50, 60);
                     mGInformer.create('MarketGidComposite'+self.id);
                 }
             }
