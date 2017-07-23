@@ -7,12 +7,11 @@ var template = fs.readFileSync('./template.html',  'utf8');
 var dirs = [];
 fs.readdirSync('./').forEach(function(file) {
     dirs.push(file);
-})
+});
 
 dirs.forEach(function(folderName){
-    console.log(folderName);
 
-    if (folderName ==='prepare.js' ||folderName === 'template.html'){
+    if (folderName ==='prepare.js' ||folderName === 'template.html' || folderName === 'error'){
         return;
     }
 
@@ -28,7 +27,7 @@ dirs.forEach(function(folderName){
             return console.log(err);
         }
 
-      //  console.log("The file was saved to path "+path_to_save  +"!");
+        console.log("The file was saved to path "+path_to_save  +"!");
     });
 });
 
