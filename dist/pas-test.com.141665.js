@@ -465,7 +465,7 @@ MarketGidBaseBlockC141665 = function (root_id, DR, fallback, containerId) {
                 (self.realRoot != undefined ? self.realRoot : self.root).parentNode.appendChild(smartInformerScript);
 
                 smartInformerScript.onload = function() {
-                    var mGInformer = new parent.window.SmartInformerCreator(self.id, 30, 60);
+                    var mGInformer = new parent.window.SmartInformerCreator(self.id, 10, 20);
                     mGInformer.create('MarketGidComposite'+self.id);
                 }
             }
