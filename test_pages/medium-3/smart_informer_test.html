@@ -291,7 +291,11 @@
             s.async = 'async';
             s.defer = 'defer';
             s.charset = 'utf-8';
-            s.src = "./dist/pas-test.com.141665.js?t=" + D.getYear() + D.getMonth() + D.getDate() + D.getHours();
+
+            var loc = document.location;
+            var basePath= loc.protocol + "//" + loc.host + '/';
+
+            s.src = basePath + "dist/pas-test.com.141665.js?t=" + D.getYear() + D.getMonth() + D.getDate() + D.getHours();
             c[ac](s);
         })();
     </script>
