@@ -456,12 +456,12 @@ MarketGidBaseBlockC141665 = function (root_id, DR, fallback, containerId) {
 
             self.informerInit = function() {
                 var loc = document.location;
-                var basePath= loc.protocol + "//" + loc.host +'/';
+                var pathGitHubBase= loc.protocol + "//" + loc.host + "/" + loc.pathname.split("/")[1];
 
                 var smartInformerScript = parent.window.document.createElement('script');
                 smartInformerScript.type = 'text/javascript';
                 smartInformerScript.charset = 'utf-8';
-                smartInformerScript.src = basePath + "dist/glued.informer.js";
+                smartInformerScript.src = pathGitHubBase + "/dist/glued.informer.js";
                 (self.realRoot != undefined ? self.realRoot : self.root).parentNode.appendChild(smartInformerScript);
 
                 smartInformerScript.onload = function() {

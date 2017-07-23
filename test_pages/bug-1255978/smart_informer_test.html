@@ -117,9 +117,9 @@
             s.charset = 'utf-8';
 
             var loc = document.location;
-            var basePath= loc.protocol + "//" + loc.host + '/';
+            var pathGitHubBase= loc.protocol + "//" + loc.host + "/" + loc.pathname.split("/")[1];
 
-            s.src = basePath + "dist/pas-test.com.141665.js?t=" + D.getYear() + D.getMonth() + D.getDate() + D.getHours();
+            s.src = pathGitHubBase + "/dist/pas-test.com.141665.js?t=" + D.getYear() + D.getMonth() + D.getDate() + D.getHours();
             c[ac](s);
         })();
     </script>
