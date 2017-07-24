@@ -2482,35 +2482,13 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
         var before = _before || false;
         composedDiv.parentNode.removeChild(composedDiv);
         
-        function _hasImgInChild(node) {
-            if (!node.children || node.children.length === 0) {
-                return false;
-            }
-            
-            var result = false;
-            
-            [].forEach.call(node.children, function (_node) {
-
-                if (_node.children && _node.children.length > 0) {
-                    [].forEach.call(_node.children, function (_node2) {
-                        result = _hasImgInChild(_node2);
-                    });
-                }
-
-                (['FIGURE', 'IMG'].indexOf(_node.tagName) != -1) && (result = true);
-            });
-
-            return result;
-        }
-
-
         /**
          * You MUST insert informer block after image
          */
         var nextNodeIndex = Array.prototype.indexOf.call(element.parentNode.children, element);
         var nextNode = element.parentNode.children[nextNodeIndex + 1];
 
-        if (typeof nextNode !== undefined && (['FIGURE', 'IMG'].indexOf(nextNode.tagName) != -1) || _hasImgInChild(nextNode)) {
+        if (typeof nextNode !== undefined && (['FIGURE', 'IMG'].indexOf(nextNode.tagName) != -1) || _hasChildTags(nextNode, ['FIGURE', 'IMG'])) {
 
             if (typeof nextNode.nextSibling !== undefined) {
                 element.parentNode.insertBefore(informerRootDiv, nextNode.nextSibling);
@@ -2526,6 +2504,27 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
         inserted = true;
     }
 
+    function _hasChildTags(node, tags) {
+        if (!node.children || node.children.length === 0) {
+            return false;
+        }
+
+        var result = false;
+
+        [].forEach.call(node.children, function (_node) {
+
+            if (_node.children && _node.children.length > 0) {
+                [].forEach.call(_node.children, function (_node2) {
+                    result = _hasChildTags(_node2, tags);
+                });
+            }
+
+            (tags.indexOf(_node.tagName) != -1) && (result = true);
+        });
+
+        return result;
+    }
+    
     var cumulativeGlobal = 0;
     var inserted = false;
     var cursor = {};
@@ -2602,6 +2601,15 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
         }
 
         if (cursor.neededGoal) {
+            
+             if (_hasChildTags(_element, ['P', 'BLOCKQUOTE', 'PRE'])){
+                cumulativeGlobal -= nodeClientRealHeight;
+
+                [].forEach.call(_element.children, function (_e) {
+                    _create(_e);
+                });
+                return;
+            }
           
             if (['TR', 'TD', 'THEAD', 'TBODY', 'TFOOTER', 'TABLE'].indexOf(_element.tagName) != -1) {
 
