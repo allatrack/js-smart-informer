@@ -2507,6 +2507,7 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
             console.warn('Smart Informer: Article is too small to render informer block');
             // so clean DOM
             composedDiv.parentNode.removeChild(composedDiv);
+            inserted = true;
             return;
         }
 
