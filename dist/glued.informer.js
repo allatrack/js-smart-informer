@@ -2481,7 +2481,46 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
 
         var before = _before || false;
         composedDiv.parentNode.removeChild(composedDiv);
-        element.parentNode.insertBefore(informerRootDiv, before ? element : element.nextSibling);
+        
+        function _hasImgInChild(node) {
+            if (!node.children || node.children.length === 0) {
+                return false;
+            }
+            
+            var result = false;
+            
+            [].forEach.call(node.children, function (_node) {
+
+                if (_node.children && _node.children.length > 0) {
+                    [].forEach.call(_node.children, function (_node2) {
+                        result = _hasImgInChild(_node2);
+                    });
+                }
+
+                (['FIGURE', 'IMG'].indexOf(_node.tagName) != -1) && (result = true);
+            });
+
+            return result;
+        }
+
+
+        /**
+         * You MUST insert informer block after image
+         */
+        var nextNodeIndex = Array.prototype.indexOf.call(element.parentNode.children, element);
+        var nextNode = element.parentNode.children[nextNodeIndex + 1];
+
+        if (typeof nextNode !== undefined && (['FIGURE', 'IMG'].indexOf(nextNode.tagName) != -1) || _hasImgInChild(nextNode)) {
+
+            if (typeof nextNode.nextSibling !== undefined) {
+                element.parentNode.insertBefore(informerRootDiv, nextNode.nextSibling);
+            } else {
+                console.error('Cant insert informer block after image - it does not exist');
+            }
+        } else {
+            element.parentNode.insertBefore(informerRootDiv, before ? element : element.nextSibling);
+        }
+        
         informerRootDiv = document.getElementById(informerRootDiv.id);
         informerRootDiv.appendChild(composedDiv);
         inserted = true;
