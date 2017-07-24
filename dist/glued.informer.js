@@ -2520,7 +2520,7 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
         var nextNodeIndex = Array.prototype.indexOf.call(element.parentNode.children, element);
         var nextNode = element.parentNode.children[nextNodeIndex + 1];
 
-        if ((typeof nextNode !== undefined || nextNode !== null) && (['FIGURE', 'IMG'].indexOf(nextNode.tagName) != -1) || _hasChildTags(nextNode, ['FIGURE', 'IMG'])) {
+        if ((typeof nextNode != 'undefined') && (['FIGURE', 'IMG'].indexOf(nextNode.tagName) != -1) || _hasChildTags(nextNode, ['FIGURE', 'IMG'])) {
 
             if (typeof nextNode.nextSibling !== undefined) {
                 element.parentNode.insertBefore(informerRootDiv, nextNode.nextSibling);
