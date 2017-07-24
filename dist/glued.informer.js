@@ -53,6 +53,22 @@
     t = null
 }());
 
+// For internet explorer only
+if (!String.prototype.includes) {
+    String.prototype.includes = function(search, start) {
+        'use strict';
+        if (typeof start !== 'number') {
+            start = 0;
+        }
+
+        if (start + search.length > this.length) {
+            return false;
+        } else {
+            return this.indexOf(search, start) !== -1;
+        }
+    };
+}
+
 if (!Array.prototype.indexOf) {
     Array.prototype.indexOf = function (searchElement, fromIndex) {
         var k;
@@ -2192,6 +2208,16 @@ if (typeof module === "object") {
 
 function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
 
+    function isNumeric(n) {
+        return !isNaN(parseFloat(n)) && isFinite(n);
+    }
+
+    if (!isNumeric(_percentageFrom) || !isNumeric(_percentageTo)) {
+        throw new Error('Provided percentages must be numeric only.' +
+            ' _percentageFrom: ' + _percentageFrom +
+            ' _percentageTo: ' + _percentageTo + ' given');
+    }
+
     if (typeof id == 'undefined' || id == '') {
         throw new Error('Root Id was excepted but ' + id + ' given');
     }
@@ -2218,8 +2244,8 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
 
     var rootId = id;
     var marketGidCompositeId;
-    var percentageFrom = _percentageFrom || 30;
-    var percentageTo = _percentageTo || 60;
+    var percentageFrom = _percentageFrom === null || _percentageFrom === undefined ? 30 : _percentageFrom;
+    var percentageTo = _percentageTo === null || _percentageTo === undefined ? 60 : _percentageTo;
     var articleHeight = 0;
     var articleParsed;
     var article;
@@ -2389,7 +2415,7 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
         });
     }
 
-    function _findRealArticleInDOM(node){
+    function _findRealArticleInDOM(node) {
 
         // try to find article body by id
         if (node['id']) {
@@ -2420,7 +2446,7 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
 
         /**
          * Parse and get copy of the article from real DOM
-         * 
+         *
          * @type {object} articleParsed - copy of the article from real DOM
          */
         articleParsed = new Readability({
@@ -2432,15 +2458,27 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
         }, document.cloneNode(true)).parse();
 
         article = _findRealArticleInDOM(articleParsed.rootElements[0]);
-        
+
         if (!article) {
             throw new Error('Article In DOM not recognized');
         }
     }
 
     function _insert(element, _before) {
-        
         var composedDiv = document.getElementById(marketGidCompositeId);
+
+        /**
+         * Important: Part of business logic
+         * ----
+         * You cant render informer block if article height less then block height -245px
+         */
+        if (articleHeight <= 300) {
+            console.warn('Smart Informer: Article is too small to render informer block');
+            // so clean DOM
+            composedDiv.parentNode.removeChild(composedDiv);
+            return;
+        }
+
         var before = _before || false;
         composedDiv.parentNode.removeChild(composedDiv);
         element.parentNode.insertBefore(informerRootDiv, before ? element : element.nextSibling);
@@ -2454,9 +2492,15 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
     var cursor = {};
 
     Object.defineProperties(cursor, {
-        beforeGoal: {get: function () {return cumulativeGlobal === 0 || cumulativeGlobal <= offsetHeightFrom;}},
-        neededGoal: {get: function () {return cumulativeGlobal >= offsetHeightFrom && cumulativeGlobal <= offsetHeightTo;}},
-        afterGoal: {get: function () {return cumulativeGlobal >= offsetHeightTo || cumulativeGlobal <= articleHeight;}}
+        beforeGoal: {get: function () {
+            return cumulativeGlobal === 0 || cumulativeGlobal <= offsetHeightFrom;
+        }},
+        neededGoal: {get: function () {
+            return cumulativeGlobal >= offsetHeightFrom && cumulativeGlobal <= offsetHeightTo;
+        }},
+        afterGoal: {get: function () {
+            return cumulativeGlobal >= offsetHeightTo || cumulativeGlobal <= articleHeight;
+        }}
     });
 
     function _getRealHeight(_element) {
@@ -2467,7 +2511,7 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
             return _elementClientHeight
         }
 
-        if (!_element.children) {
+        if (_element.children && _element.children.length===0 && _elementClientHeight===0) {
             return _elementClientHeight;
         } else {
             [].forEach.call(_element.children, function (node) {
@@ -2484,6 +2528,7 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
     }
 
     function _createIntoParentSibling(_el) {
+
         if (_el.parentNode.children.length > 1) {
             _create(_el.nextSibling);
         } else {
@@ -2491,10 +2536,15 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
         }
     }
 
+
     function _create(_element) {
 
         if (inserted) {
             return
+        }
+
+        if (_element.clientHeight===undefined){
+            return;
         }
 
         var nodeClientRealHeight = _element.clientHeight == 0
@@ -2513,10 +2563,14 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
         }
 
         if (cursor.neededGoal) {
-
+          
             if (['TR', 'TD', 'THEAD', 'TBODY', 'TFOOTER', 'TABLE'].indexOf(_element.tagName) != -1) {
 
                 function _getTableNode(_element) {
+                    if (_element.tagName === 'TABLE') {
+                        return _element;
+                    }
+
                     return (_element.parentNode && _element.parentNode.tagName !== 'TABLE')
                         ? _getTableNode(_element.parentNode)
                         : _element.parentNode;
@@ -2531,7 +2585,8 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
                 return;
             }
 
-            if (['IFRAME', 'IMG', 'FIGURE', 'BLOCKQUOTE', 'PRE'].indexOf(_element.tagName) != -1) {
+            if (['IFRAME', 'IMG', 'FIGURE'].indexOf(_element.tagName) != -1) {
+
                 _insert(_element);
                 return;
             }
@@ -2541,27 +2596,50 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
         }
 
         if (cursor.afterGoal) {
-            
             cumulativeGlobal -= nodeClientRealHeight;
 
-            if (_element.children && _element.children.length) {
+            /**
+             * Part of business logic
+             * ----
+             * If there is large paragraph, which does not
+             * suit our range - insert informer before it.
+             */
+            if (['P', 'BLOCKQUOTE', 'PRE', 'SPAN'].indexOf(_element.tagName) != -1) {
 
+                if (['BLOCKQUOTE', 'PRE'].indexOf(_element.tagName) != -1) {
+
+                    if (! _element.children ){
+                        _insert(_element);
+                        return;
+                    }
+
+                    [].forEach.call(_element.children, function (_e) {
+                        _create(_e);
+                    });
+
+                    return;
+                }
+
+                _insert(_element, true);
+                return;
+            }
+
+            if (_element.children && _element.children.length) {
                 [].forEach.call(_element.children, function (_e) {
                     _create(_e);
                 });
-
             } else {
-                _createIntoParentSibling(_element)
+                _createIntoParentSibling(_element);
             }
         }
     }
 
     function _initiateCreating(_marketGidCompositeID) {
 
-        if (!_marketGidCompositeID){
+        if (!_marketGidCompositeID) {
             throw new Error('_marketGidCompositeID must be specified');
         }
-        
+
         marketGidCompositeId = _marketGidCompositeID;
 
         if (!article.children && !article.length) {
@@ -2569,8 +2647,6 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
         }
 
         (articleHeight === 0) && _calculateArticleHeight();
-
-        // console.log(articleHeight, offsetHeightFrom, offsetHeightTo);
 
         if (article.length) {
             [].forEach.call(article, function (article) {
@@ -2586,6 +2662,7 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
     }
 
     function _calculateArticleHeight() {
+
         articleHeight = 0;
 
         if (article.length) {
@@ -2598,7 +2675,7 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
         } else {
 
             [].forEach.call(article.children, function (e) {
-                articleHeight += e.clientHeight; 
+                articleHeight += e.clientHeight;
             });
         }
 

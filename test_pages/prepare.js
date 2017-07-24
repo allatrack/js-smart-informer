@@ -21,7 +21,6 @@ dirs.forEach(function(folderName){
     var result = _template.replace(regex, page);
     var path_to_save ='./'+folderName+'/smart_informer_test.html';
 
-
     fs.writeFile(path_to_save , result, function(err ) {
         if(err) {
             return console.log(err);

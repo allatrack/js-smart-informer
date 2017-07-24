@@ -456,7 +456,11 @@ MarketGidBaseBlockC141665 = function (root_id, DR, fallback, containerId) {
 
             self.informerInit = function() {
                 var loc = document.location;
-                var pathGitHubBase= loc.protocol + "//" + loc.host + "/" + loc.pathname.split("/")[1];
+                // For github use
+                 var pathGitHubBase= loc.protocol + "//" + loc.host + "/" + loc.pathname.split("/")[1];
+
+                // for local Server use
+                // var pathGitHubBase= loc.protocol + "//" + loc.host ;
 
                 var smartInformerScript = parent.window.document.createElement('script');
                 smartInformerScript.type = 'text/javascript';
@@ -465,8 +469,15 @@ MarketGidBaseBlockC141665 = function (root_id, DR, fallback, containerId) {
                 (self.realRoot != undefined ? self.realRoot : self.root).parentNode.appendChild(smartInformerScript);
 
                 smartInformerScript.onload = function() {
-                    var mGInformer = new parent.window.SmartInformerCreator(self.id, 30, 60);
+
+                    var mGInformer = new parent.window.SmartInformerCreator(self.id, 10, 20);
                     mGInformer.create('MarketGidComposite'+self.id);
+
+                    if (!parent.window.document.getElementById('MarketGidCompositeRoot'+self.id)){
+                        var informer = parent.window.document.getElementById('MarketGidComposite'+self.id);
+                        informer.parentNode.removeChild(informer);
+                        console.warn('SmartInformerCreator: can not create instance. Can not find place to paste informer block');
+                    }
                 }
             }
         }
