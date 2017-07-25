@@ -2547,6 +2547,17 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         var nextNodeIndex = Array.prototype.indexOf.call(element.parentNode.children, element);
         var nextNode = element.parentNode.children[nextNodeIndex + 1];
 
+        if (_hasChildTags(element,  ['FIGURE', 'IMG', 'TABLE', 'IFRAME', 'TIME', 'CODE'])) {
+
+           // todo: Provide for going down to paste in
+           element.parentNode.insertBefore(informerRootDiv,  element.nextSibling);
+
+           informerRootDiv = document.getElementById(informerRootDiv.id);
+           informerRootDiv.appendChild(smartInformer);
+           inserted = true;
+           return;
+        }
+        
         if (['H1', 'H2', 'H3', 'H4', 'H5','H6'].indexOf(element.tagName)!=-1 || _hasSpecialNexElement(nextNode, ['UL', 'OL'])) {
             if (typeof nextNode.nextSibling != 'undefined') {
                  element.parentNode.insertBefore(informerRootDiv, nextNode.nextSibling);
