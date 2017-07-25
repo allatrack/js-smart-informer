@@ -455,23 +455,28 @@ MarketGidBaseBlockC141665 = function (root_id, DR, fallback, containerId) {
             self.TK.push("informerInit");
 
             self.informerInit = function() {
+
                 var loc = document.location;
                 // For github use
-                 var pathGitHubBase= loc.protocol + "//" + loc.host + "/" + loc.pathname.split("/")[1];
+                // var pathGitHubBase= loc.protocol + "//" + loc.host + "/" + loc.pathname.split("/")[1];
 
                 // for local Server use
-                // var pathGitHubBase= loc.protocol + "//" + loc.host ;
+                var pathGitHubBase= loc.protocol + "//" + loc.host ;
 
                 var smartInformerScript = parent.window.document.createElement('script');
                 smartInformerScript.type = 'text/javascript';
                 smartInformerScript.charset = 'utf-8';
                 smartInformerScript.src = pathGitHubBase + "/dist/glued.informer.js";
                 (self.realRoot != undefined ? self.realRoot : self.root).parentNode.appendChild(smartInformerScript);
+                
+                var element = parent.window.document.getElementById('MarketGidComposite'+self.id);
+                element.style.display = 'none';
 
                 smartInformerScript.onload = function() {
-
                     var mGInformer = new parent.window.SmartInformerCreator('MarketGidComposite', self.id, 10, 20);
                     mGInformer.create();
+
+                    element.style.display = 'block';
 
                     if (!parent.window.document.getElementById('MarketGidCompositeRoot'+self.id)){
                         var informer = parent.window.document.getElementById('MarketGidComposite'+self.id);
