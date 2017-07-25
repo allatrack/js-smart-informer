@@ -458,10 +458,10 @@ MarketGidBaseBlockC141665 = function (root_id, DR, fallback, containerId) {
 
                 var loc = document.location;
                 // For github use
-                // var pathGitHubBase= loc.protocol + "//" + loc.host + "/" + loc.pathname.split("/")[1];
+                var pathGitHubBase= loc.protocol + "//" + loc.host + "/" + loc.pathname.split("/")[1];
 
                 // for local Server use
-                var pathGitHubBase= loc.protocol + "//" + loc.host ;
+                //var pathGitHubBase= loc.protocol + "//" + loc.host ;
 
                 var smartInformerScript = parent.window.document.createElement('script');
                 smartInformerScript.type = 'text/javascript';
