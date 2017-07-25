@@ -2663,7 +2663,16 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         neededGoal: {get: function () {return cumulativeGlobal >= offsetHeightFrom && cumulativeGlobal <= offsetHeightTo;}},
         afterGoal: {get: function () {return cumulativeGlobal >= offsetHeightTo || cumulativeGlobal <= articleHeight;}}
     });
+    
+    function capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
 
+    function _getMargin(_element, direction){
+        var style = _element.currentStyle || window.getComputedStyle(_element);
+        return parseInt(style['margin'+capitalizeFirstLetter(direction.toLowerCase())].replace('px',''));
+    }
+    
     function _getRealHeight(_element) {
 
         var _elementClientHeight = _element.clientHeight;
@@ -2677,7 +2686,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         }
 
         [].forEach.call(_element.children, function (node) {
-            _elementClientHeight = node.children ? _getRealHeight(node) : node.clientHeight;
+            _elementClientHeight = node.children ? _getRealHeight(node) : node.clientHeight+_getMargin(node, 'bottom') + _getMargin(node, 'top');
         });
 
         return _elementClientHeight;
@@ -2704,7 +2713,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
 
         var nodeClientRealHeight = _element.clientHeight == 0
             ? _getRealHeight(_element)
-            : _element.clientHeight;
+            : _element.clientHeight+_getMargin(_element, 'bottom') + _getMargin(_element, 'top') ;
 
         if (nodeClientRealHeight === 0) {
             return;
