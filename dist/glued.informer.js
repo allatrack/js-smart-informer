@@ -2487,7 +2487,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
                 result = getArticleParent(element);
             })
         } else {
-            result = getArticleParent(element);
+            result = getArticleParent(node);
         }
 
         return result;
