@@ -2237,44 +2237,51 @@ if (typeof module === "object") {
     module.exports = Readability;
 }
 
-function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
+function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentageTo) {
 
     function isNumeric(n) {
         return !isNaN(parseFloat(n)) && isFinite(n);
     }
 
     if (!isNumeric(_percentageFrom) || !isNumeric(_percentageTo)) {
-        throw new Error('Provided percentages must be numeric only.' +
+        console.error('SmartInformerCreator.constructor: Provided percentages must be numeric only.' +
             ' _percentageFrom: ' + _percentageFrom +
             ' _percentageTo: ' + _percentageTo + ' given');
     }
 
+    if (!smartInformerName) {
+        console.error('SmartInformerCreator.constructor: smartInformerName must be specified');
+    }
+
     if (typeof id == 'undefined' || id == '') {
-        throw new Error('Root Id was excepted but ' + id + ' given');
+        console.error('SmartInformerCreator.constructor: Root Id was excepted but ' + id + ' given');
     }
 
     if (!_percentageFrom) {
-        console.warn('Percentage from was excepted but it was not given. Default value (30% will be used)');
+        console.warn('SmartInformerCreator.constructor: Percentage from was excepted but it was not given. Default value (30% will be used)');
     }
 
     if (!_percentageTo) {
-        console.warn('Percentage to was excepted but it was not given. Default value (60% will be used)');
+        console.warn('SmartInformerCreator.constructor: Percentage to was excepted but it was not given. Default value (60% will be used)');
     }
 
     if (_percentageFrom < 0 || _percentageFrom > 100) {
-        throw new Error('_percentageFrom param must be between 0-100 and lower than _percentageTo. ' + _percentageFrom + ' given');
+        console.error('SmartInformerCreator.constructor: _percentageFrom param must be between 0-100 and lower than _percentageTo. ' + _percentageFrom + ' given');
     }
 
     if (_percentageTo < 0 || _percentageTo > 100) {
-        throw new Error('_percentageFrom param must be between 0-100 and lower than _percentageTo. ' + _percentageFrom + ' given');
+        console.error('SmartInformerCreator.constructor: _percentageFrom param must be between 0-100 and lower than _percentageTo. ' + _percentageFrom + ' given');
     }
 
     if (_percentageFrom > _percentageTo) {
-        throw new Error('_percentageFrom > _percentageTo. This must be _percentageFrom < _percentageTo');
+        console.error('SmartInformerCreator.constructor: _percentageFrom > _percentageTo. This must be _percentageFrom < _percentageTo');
     }
 
     var rootId = id;
-    var marketGidCompositeId;
+    var marketGidCompositeId = smartInformerName+id;
+    var smartInformer = document.getElementById(marketGidCompositeId);
+    smartInformer.parentNode.removeChild(smartInformer);
+
     var percentageFrom = _percentageFrom === null || _percentageFrom === undefined ? 30 : _percentageFrom;
     var percentageTo = _percentageTo === null || _percentageTo === undefined ? 60 : _percentageTo;
     var articleHeight = 0;
@@ -2287,7 +2294,7 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
     function _initMarketGidCompositeRootDiv() {
 
         informerRootDiv = document.createElement('div');
-        informerRootDiv.id = 'MarketGidCompositeRoot' + rootId;
+        informerRootDiv.id = smartInformerName +'Root' + rootId;
         informerRootDiv.classList.add('yui3-cssreset');
 
         // reset all the styles of the informerRootDiv
@@ -2446,25 +2453,44 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
         });
     }
 
-    function _findRealArticleInDOM(node) {
+    function getArticleParent(node) {
 
         // try to find article body by id
         if (node['id']) {
-            return document.getElementById(node['id']);
+
+            var nodeInDom = document.getElementById(node['id']);
+
+            return nodeInDom ? nodeInDom.parentNode : null;
 
             // try to find article body by css class
         } else if (node.classList && node.classList.length) {
 
             var classes = [];
-            [].forEach.call(node.classList, function (className) {
-                classes.push(className);
-            });
-
-            return document.getElementsByClassName(classes.join('.'));
+            [].forEach.call(node.classList, function (className) { classes.push(className); });
+            var articleNodes = document.getElementsByClassName(classes.join(' '));
+            return articleNodes.length && typeof articleNodes[0] != 'undefined' ? articleNodes[0].parentNode : null;
 
         } else {
-            return node.parentNode ? _findRealArticleInDOM(node.parentNode) : null;
+          
+            return node.parentNode ? _extractArticle(node.parentNode) : null;
         }
+    }
+
+    function _extractArticle(node) {
+
+        var result = null;
+
+        if (node.length) {
+
+            // article consists of  more than one element
+            [].forEach.call(node, function (element) {
+                result = getArticleParent(element);
+            })
+        } else {
+            result = getArticleParent(element);
+        }
+
+        return result;
     }
 
     function _parseArticle() {
@@ -2488,55 +2514,85 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
             pathBase: loc.protocol + "//" + loc.host + loc.pathname.substr(0, loc.pathname.lastIndexOf("/") + 1)
         }, document.cloneNode(true)).parse();
 
-        article = _findRealArticleInDOM(articleParsed.rootElements[0]);
+        article = _extractArticle(articleParsed.rootElements);
 
         if (!article) {
-            throw new Error('Article In DOM not recognized');
+            console.error('SmartInformerCreator._parseArticle: Article In DOM not recognized');
         }
     }
 
+    /**
+     * Insert informer to DOM
+     *
+     * @param {Element} element - web Element
+     * @param {boolean} _before - need to insert before
+     * @private
+     */
     function _insert(element, _before) {
-        var composedDiv = document.getElementById(marketGidCompositeId);
-
+        
         /**
          * Important: Part of business logic
          * ----
          * You cant render informer block if article height less then block height -245px
          */
         if (articleHeight <= 300) {
-            console.warn('Smart Informer: Article is too small to render informer block');
+
+            console.warn('SmartInformerCreator._insert: Article is too small to render informer block');
             // so clean DOM
-            composedDiv.parentNode.removeChild(composedDiv);
             inserted = true;
             return;
         }
 
         var before = _before || false;
-        composedDiv.parentNode.removeChild(composedDiv);
-        
-        /**
-         * You MUST insert informer block after image
-         */
         var nextNodeIndex = Array.prototype.indexOf.call(element.parentNode.children, element);
         var nextNode = element.parentNode.children[nextNodeIndex + 1];
 
-        if ((typeof nextNode != 'undefined') && (['FIGURE', 'IMG'].indexOf(nextNode.tagName) != -1) || _hasChildTags(nextNode, ['FIGURE', 'IMG'])) {
+        if (['H1', 'H2', 'H3', 'H4', 'H5','H6'].indexOf(element.tagName)!=-1 || _hasSpecialNexElement(nextNode, ['UL', 'OL'])) {
+            if (typeof nextNode.nextSibling != 'undefined') {
+                 element.parentNode.insertBefore(informerRootDiv, nextNode.nextSibling);
+            } else {
+                console.error('SmartInformerCreator._insert: Cant insert informer block after image - it does not exist');
+            }
 
-            if (typeof nextNode.nextSibling !== undefined) {
+
+        } else if (_hasSpecialNexElement(nextNode, ['FIGURE', 'IMG', 'TABLE', 'IFRAME', 'TIME', 'CODE'])) {
+            if (typeof nextNode.nextSibling != 'undefined') {
                 element.parentNode.insertBefore(informerRootDiv, nextNode.nextSibling);
             } else {
-                console.error('Cant insert informer block after image - it does not exist');
+                console.error('SmartInformerCreator._insert: Cant insert informer block after image - it does not exist');
             }
+
+
         } else {
             element.parentNode.insertBefore(informerRootDiv, before ? element : element.nextSibling);
         }
-        
+
         informerRootDiv = document.getElementById(informerRootDiv.id);
-        informerRootDiv.appendChild(composedDiv);
+        informerRootDiv.appendChild(smartInformer);
         inserted = true;
     }
 
+    /**
+     * You MUST insert informer block after image
+     */
+    function _hasSpecialNexElement(nextNode, specialTags) {
+
+        return (typeof nextNode != 'undefined')
+            && (specialTags.indexOf(nextNode.tagName) != -1)
+            || _hasChildTags(nextNode, specialTags);
+    }
+
     function _hasChildTags(node, tags) {
+
+        if (!tags || !tags.length) {
+            console.warn('SmartInformerCreator._hasChildTags: tags MUST NOT be empty array');
+            return false;
+        }
+
+        if (typeof node == 'undefined') {
+            return false;
+        }
+
         if (!node.children || node.children.length === 0) {
             return false;
         }
@@ -2547,30 +2603,65 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
 
             if (_node.children && _node.children.length > 0) {
                 [].forEach.call(_node.children, function (_node2) {
-                    result = _hasChildTags(_node2, tags);
+                    if (!result) {
+                        result = _hasChildTags(_node2, tags);
+                    }
                 });
             }
 
-            (tags.indexOf(_node.tagName) != -1) && (result = true);
+            if (!result) {
+                (tags.indexOf(_node.tagName) != -1) && (result = true);
+            }
+
         });
 
         return result;
     }
-    
+
+    function _getFirstChildByTag(node, tags){
+        if (!tags ) {
+            console.warn('SmartInformerCreator._getFirstChildByTag: - tag MUST NOT be empty array');
+            return false;
+        }
+
+        if (typeof node == 'undefined') {
+            console.warn('SmartInformerCreator._getFirstChildByTag: - Node MUST NOT be empty ');
+            return false;
+        }
+
+        if (!node.children || node.children.length === 0) {
+            return false;
+        }
+
+        var result = null;
+
+        [].forEach.call(node.children, function (_node) {
+
+            if (_node.children && _node.children.length > 0) {
+                [].forEach.call(_node.children, function (_node2) {
+                    if (!result) {
+                        result = _getFirstChildByTag(_node2, tags);
+                    }
+                });
+            }
+
+            if (!result) {
+                (tags.indexOf(_node.tagName) != -1) && (result = _node);
+            }
+
+        });
+
+        return result;
+    }
+
     var cumulativeGlobal = 0;
     var inserted = false;
     var cursor = {};
 
     Object.defineProperties(cursor, {
-        beforeGoal: {get: function () {
-            return cumulativeGlobal === 0 || cumulativeGlobal <= offsetHeightFrom;
-        }},
-        neededGoal: {get: function () {
-            return cumulativeGlobal >= offsetHeightFrom && cumulativeGlobal <= offsetHeightTo;
-        }},
-        afterGoal: {get: function () {
-            return cumulativeGlobal >= offsetHeightTo || cumulativeGlobal <= articleHeight;
-        }}
+        beforeGoal: {get: function () {return cumulativeGlobal === 0 || cumulativeGlobal <= offsetHeightFrom;}},
+        neededGoal: {get: function () {return cumulativeGlobal >= offsetHeightFrom && cumulativeGlobal <= offsetHeightTo;}},
+        afterGoal: {get: function () {return cumulativeGlobal >= offsetHeightTo || cumulativeGlobal <= articleHeight;}}
     });
 
     function _getRealHeight(_element) {
@@ -2581,24 +2672,18 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
             return _elementClientHeight
         }
 
-        if (_element.children && _element.children.length===0 && _elementClientHeight===0) {
+        if (_element.children && _element.children.length === 0 && _elementClientHeight === 0) {
             return _elementClientHeight;
-        } else {
-            [].forEach.call(_element.children, function (node) {
-
-                if (node.children) {
-                    _elementClientHeight = _getRealHeight(node);
-                } else {
-                    _elementClientHeight = node.clientHeight;
-                }
-            });
         }
+
+        [].forEach.call(_element.children, function (node) {
+            _elementClientHeight = node.children ? _getRealHeight(node) : node.clientHeight;
+        });
 
         return _elementClientHeight;
     }
 
     function _createIntoParentSibling(_el) {
-
         if (_el.parentNode.children.length > 1) {
             _create(_el.nextSibling);
         } else {
@@ -2613,14 +2698,13 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
             return
         }
 
-        if (_element.clientHeight===undefined){
+        if (_element.clientHeight === undefined) {
             return;
         }
 
         var nodeClientRealHeight = _element.clientHeight == 0
             ? _getRealHeight(_element)
             : _element.clientHeight;
-
 
         if (nodeClientRealHeight === 0) {
             return;
@@ -2633,8 +2717,8 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
         }
 
         if (cursor.neededGoal) {
-            
-             if (_hasChildTags(_element, ['P', 'BLOCKQUOTE', 'PRE'])){
+
+            if (_hasChildTags(_element, ['P', 'BLOCKQUOTE', 'PRE'])) {
                 cumulativeGlobal -= nodeClientRealHeight;
 
                 [].forEach.call(_element.children, function (_e) {
@@ -2642,7 +2726,7 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
                 });
                 return;
             }
-          
+
             if (['TR', 'TD', 'THEAD', 'TBODY', 'TFOOTER', 'TABLE'].indexOf(_element.tagName) != -1) {
 
                 function _getTableNode(_element) {
@@ -2658,14 +2742,13 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
                 _insert(_getTableNode(_element));
                 return;
             }
-
+            
             if (_element.tagName === 'LI') {
                 _insert(_element.parentNode);
                 return;
             }
 
             if (['IFRAME', 'IMG', 'FIGURE'].indexOf(_element.tagName) != -1) {
-
                 _insert(_element);
                 return;
             }
@@ -2677,6 +2760,12 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
         if (cursor.afterGoal) {
             cumulativeGlobal -= nodeClientRealHeight;
 
+            if (nodeClientRealHeight < articleHeight && ['IFRAME', 'IMG', 'FIGURE', 'TIME', 'CODE'].indexOf(_element.tagName) != -1) {
+
+                _insert(_element);
+                return;
+            }
+
             /**
              * Part of business logic
              * ----
@@ -2687,7 +2776,7 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
 
                 if (['BLOCKQUOTE', 'PRE'].indexOf(_element.tagName) != -1) {
 
-                    if (! _element.children ){
+                    if (!_element.children) {
                         _insert(_element);
                         return;
                     }
@@ -2699,11 +2788,17 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
                     return;
                 }
 
+                if (_hasChildTags(_element, ['IMG', 'FIGURE', 'IFRAME'])){
+                    _insert( _getFirstChildByTag(_element, ['IMG', 'FIGURE', 'IFRAME']) );
+                    return;
+                }
+
                 _insert(_element, true);
                 return;
             }
 
             if (_element.children && _element.children.length) {
+
                 [].forEach.call(_element.children, function (_e) {
                     _create(_e);
                 });
@@ -2713,16 +2808,10 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
         }
     }
 
-    function _initiateCreating(_marketGidCompositeID) {
-
-        if (!_marketGidCompositeID) {
-            throw new Error('_marketGidCompositeID must be specified');
-        }
-
-        marketGidCompositeId = _marketGidCompositeID;
+    function _initiateCreating() {
 
         if (!article.children && !article.length) {
-            throw new Error('Article cant be without any children');
+            console.error('SmartInformerCreator._initiateCreating: Article cant be without any children');
         }
 
         (articleHeight === 0) && _calculateArticleHeight();
@@ -2742,22 +2831,7 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
 
     function _calculateArticleHeight() {
 
-        articleHeight = 0;
-
-        if (article.length) {
-
-            [].forEach.call(article, function (article) {
-                [].forEach.call(article.children, function (e) {
-                    articleHeight += e.clientHeight;
-                });
-            });
-        } else {
-
-            [].forEach.call(article.children, function (e) {
-                articleHeight += e.clientHeight;
-            });
-        }
-
+        articleHeight = _getRealHeight(article);
         offsetHeightFrom = articleHeight * percentageFrom / 100;
         offsetHeightTo = articleHeight * percentageTo / 100;
     }
@@ -2765,12 +2839,8 @@ function SmartInformerCreator(id, _percentageFrom, _percentageTo) {
     _initMarketGidCompositeRootDiv();
     _parseArticle();
     _calculateArticleHeight();
-
     // give public API method
     return {
         create: _initiateCreating
     }
 }
-
-
-
