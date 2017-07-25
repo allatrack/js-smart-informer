@@ -470,8 +470,8 @@ MarketGidBaseBlockC141665 = function (root_id, DR, fallback, containerId) {
 
                 smartInformerScript.onload = function() {
 
-                    var mGInformer = new parent.window.SmartInformerCreator(self.id, 10, 20);
-                    mGInformer.create('MarketGidComposite'+self.id);
+                    var mGInformer = new parent.window.SmartInformerCreator('MarketGidComposite', self.id, 10, 20);
+                    mGInformer.create();
 
                     if (!parent.window.document.getElementById('MarketGidCompositeRoot'+self.id)){
                         var informer = parent.window.document.getElementById('MarketGidComposite'+self.id);
