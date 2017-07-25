@@ -1,0 +1,42 @@
+(function (){
+  var margin = {top: 20, right: 20, bottom: 20, left: 20},
+      width = 760,
+      height = 300;
+
+  var xdata = d3.range(50);
+
+  var xy = [];
+  for(var i=0;i<xdata.length;i++){
+     xy.push({x:xdata[i],y:ydata[i]});
+  }
+
+  var xscl = d3.scale.linear()
+      .domain(d3.extent(xy,function(d) {return d.x;}))
+      .range([0 + margin.left, width])
+
+  var yscl = d3.scale.linear()
+      .domain(d3.extent(xy,function(d) {return d.y;}))
+      .range([height, margin.top])
+
+  var xAxis = d3.svg.axis()
+  .scale(xscl)
+  .tickSize(-height)
+  .tickPadding(height + 15)
+  .orient("bottom");
+
+  var slice = d3.svg.line()
+    .x(function(d,i) { return xscl(d.x);})
+    .y(function(d,i) { return yscl(d.y);})
+
+  var svg = d3.select("#freqChart")
+      .append("svg")
+          .attr("width", width + margin.left + margin.right)
+          .attr("height", height + margin.top + margin.bottom)
+          .call(xAxis)
+
+  svg.append("path")
+      .attr("class", "line")
+      .attr("stroke", "url(#linearGradient)")
+      .attr("stroke-linejoin", "round")
+      .attr("d", slice(xy));
+})()
