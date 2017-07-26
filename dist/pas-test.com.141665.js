@@ -454,6 +454,8 @@ MarketGidBaseBlockC141665 = function (root_id, DR, fallback, containerId) {
             self.IV();
             self.TK.push("informerInit");
 
+
+
             self.informerInit = function() {
 
                 var loc = document.location;
@@ -461,19 +463,22 @@ MarketGidBaseBlockC141665 = function (root_id, DR, fallback, containerId) {
                 var pathGitHubBase= loc.protocol + "//" + loc.host + "/" + loc.pathname.split("/")[1];
 
                 // for local Server use
-                //var pathGitHubBase= loc.protocol + "//" + loc.host ;
+                // var pathGitHubBase= loc.protocol + "//" + loc.host ;
 
                 var smartInformerScript = parent.window.document.createElement('script');
                 smartInformerScript.type = 'text/javascript';
                 smartInformerScript.charset = 'utf-8';
                 smartInformerScript.src = pathGitHubBase + "/dist/glued.informer.js";
                 (self.realRoot != undefined ? self.realRoot : self.root).parentNode.appendChild(smartInformerScript);
-                
+
                 var element = parent.window.document.getElementById('MarketGidComposite'+self.id);
                 element.style.display = 'none';
 
                 smartInformerScript.onload = function() {
-                    var mGInformer = new parent.window.SmartInformerCreator('MarketGidComposite', self.id, 70, 80);
+                    //var d =new Date();
+                    //console.info('SmartInformerCreator start runing' , d.getMinutes() +':'+d.getSeconds() +':'+ d.getMilliseconds());
+
+                    var mGInformer = new parent.window.SmartInformerCreator('MarketGidComposite', self.id, 10, 20);
                     mGInformer.create();
 
                     if (!parent.window.document.getElementById('MarketGidCompositeRoot'+self.id)){
@@ -482,6 +487,9 @@ MarketGidBaseBlockC141665 = function (root_id, DR, fallback, containerId) {
                     } else {
                         element.style.display = 'block';
                     }
+
+                    //d = new Date();
+                    //console.info('SmartInformerCreator end runing',d.getMinutes() +':'+d.getSeconds() +':'+ d.getMilliseconds());
                 }
             }
         }

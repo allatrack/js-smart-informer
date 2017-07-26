@@ -55,7 +55,7 @@
 
 // For internet explorer only
 if (!String.prototype.includes) {
-    String.prototype.includes = function(search, start) {
+    String.prototype.includes = function (search, start) {
         'use strict';
         if (typeof start !== 'number') {
             start = 0;
@@ -70,34 +70,34 @@ if (!String.prototype.includes) {
 }
 
 if (![].includes) {
-  Array.prototype.includes = function(searchElement/*, fromIndex*/) {
-    'use strict';
-    var O = Object(this);
-    var len = parseInt(O.length) || 0;
-    if (len === 0) {
-      return false;
-    }
-    var n = parseInt(arguments[1]) || 0;
-    var k;
-    if (n >= 0) {
-      k = n;
-    } else {
-      k = len + n;
-      if (k < 0) {
-        k = 0;
-      }
-    }
-    while (k < len) {
-      var currentElement = O[k];
-      if (searchElement === currentElement ||
-         (searchElement !== searchElement && currentElement !== currentElement)
-      ) {
-        return true;
-      }
-      k++;
-    }
-    return false;
-  };
+    Array.prototype.includes = function (searchElement/*, fromIndex*/) {
+        'use strict';
+        var O = Object(this);
+        var len = parseInt(O.length) || 0;
+        if (len === 0) {
+            return false;
+        }
+        var n = parseInt(arguments[1]) || 0;
+        var k;
+        if (n >= 0) {
+            k = n;
+        } else {
+            k = len + n;
+            if (k < 0) {
+                k = 0;
+            }
+        }
+        while (k < len) {
+            var currentElement = O[k];
+            if (searchElement === currentElement ||
+                (searchElement !== searchElement && currentElement !== currentElement)
+            ) {
+                return true;
+            }
+            k++;
+        }
+        return false;
+    };
 }
 
 if (!Array.prototype.indexOf) {
@@ -2487,12 +2487,48 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
                 result = getArticleParent(element);
             })
         } else {
-            result = getArticleParent(node);
+            result = getArticleParent(element);
         }
 
         return result;
     }
 
+    function _setCookie(name, value, options) {
+        options = options || {};
+
+        var expires = options.expires;
+
+        if (typeof expires == "number" && expires) {
+            var d = new Date();
+            d.setTime(d.getTime() + expires * 1000);
+            expires = options.expires = d;
+        }
+        if (expires && expires.toUTCString) {
+            options.expires = expires.toUTCString();
+        }
+
+        value = encodeURIComponent(value);
+
+        var updatedCookie = name + "=" + value;
+
+        for (var propName in options) {
+            updatedCookie += "; " + propName;
+            var propValue = options[propName];
+            if (propValue !== true) {
+                updatedCookie += "=" + propValue;
+            }
+        }
+
+        document.cookie = updatedCookie;
+    }
+
+    function _getCookie(name) {
+        var matches = document.cookie.match(new RegExp(
+            "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
+        ));
+        return matches ? decodeURIComponent(matches[1]) : undefined;
+    }
+    
     function _parseArticle() {
 
         // Readability's parse() works by modifying the DOM.
@@ -2500,6 +2536,17 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         // You could avoid this by passing the clone of the
         // document object while creating a Readability object.
         var loc = document.location;
+        //var cachedArticle = _getCookie(loc.href);
+        //
+        ////var d =new Date();
+        ////console.info('start parsing' ,d.getMilliseconds());
+        //
+        //if (cachedArticle){
+        //
+        //    article = getArticleParent(JSON.parse(cachedArticle));
+        //    //console.info('end parsing' , d.getMilliseconds());
+        //    return;
+        //}
 
         /**
          * Parse and get copy of the article from real DOM
@@ -2515,6 +2562,17 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         }, document.cloneNode(true)).parse();
 
         article = _extractArticle(articleParsed.rootElements);
+
+        var child = article.children[0];
+        var cache = {
+            id: child.id || null,
+            classList: Array.prototype.slice.call(child.classList),
+        };
+
+        _setCookie(loc.href, JSON.stringify(cache), {expires: 1000});
+
+        //d = new Date();
+        //console.info('end parsing' , d.getMilliseconds());
 
         if (!article) {
             console.error('SmartInformerCreator._parseArticle: Article In DOM not recognized');
@@ -2547,7 +2605,8 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         var nextNodeIndex = Array.prototype.indexOf.call(element.parentNode.children, element);
         var nextNode = element.parentNode.children[nextNodeIndex + 1];
 
-        if (_hasChildTags(element,  ['FIGURE', 'IMG', 'TABLE', 'IFRAME', 'TIME', 'CODE'])) {
+
+       if (_hasChildTags(element,  ['FIGURE', 'IMG', 'TABLE', 'IFRAME', 'TIME', 'CODE'])) {
 
            // todo: Provide for going down to paste in
            element.parentNode.insertBefore(informerRootDiv,  element.nextSibling);
@@ -2556,23 +2615,23 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
            informerRootDiv.appendChild(smartInformer);
            inserted = true;
            return;
-        }
-        
-        if (['H1', 'H2', 'H3', 'H4', 'H5','H6'].indexOf(element.tagName)!=-1 || _hasSpecialNexElement(nextNode, ['UL', 'OL'])) {
+       }
+
+        if (['H1', 'H2', 'H3', 'H4', 'H5','H6'].indexOf(element.tagName)!=-1 || _hasSpecialNextElement(nextNode, ['UL', 'OL'])) {
+
             if (typeof nextNode.nextSibling != 'undefined') {
                  element.parentNode.insertBefore(informerRootDiv, nextNode.nextSibling);
             } else {
                 console.error('SmartInformerCreator._insert: Cant insert informer block after image - it does not exist');
             }
 
+        } else if (_hasSpecialNextElement(nextNode, ['FIGURE', 'IMG', 'TABLE', 'IFRAME', 'TIME', 'CODE'])) {
 
-        } else if (_hasSpecialNexElement(nextNode, ['FIGURE', 'IMG', 'TABLE', 'IFRAME', 'TIME', 'CODE'])) {
             if (typeof nextNode.nextSibling != 'undefined') {
                 element.parentNode.insertBefore(informerRootDiv, nextNode.nextSibling);
             } else {
                 console.error('SmartInformerCreator._insert: Cant insert informer block after image - it does not exist');
             }
-
 
         } else {
             element.parentNode.insertBefore(informerRootDiv, before ? element : element.nextSibling);
@@ -2586,7 +2645,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
     /**
      * You MUST insert informer block after image
      */
-    function _hasSpecialNexElement(nextNode, specialTags) {
+    function _hasSpecialNextElement(nextNode, specialTags) {
 
         return (typeof nextNode != 'undefined')
             && (specialTags.indexOf(nextNode.tagName) != -1)
@@ -2674,21 +2733,13 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         neededGoal: {get: function () {return cumulativeGlobal >= offsetHeightFrom && cumulativeGlobal <= offsetHeightTo;}},
         afterGoal: {get: function () {return cumulativeGlobal >= offsetHeightTo || cumulativeGlobal <= articleHeight;}}
     });
-    
-    function capitalizeFirstLetter(string) {
-        return string.charAt(0).toUpperCase() + string.slice(1);
-    }
 
-   function _getMargin(_element, direction){
-        var style = _element.currentStyle || window.getComputedStyle(_element);
-        var margin = style['margin'+capitalizeFirstLetter(direction.toLowerCase())].replace('px','');
-        return isNumeric(margin) ? parseInt(margin): 0;
-    }
-    
     function _getRealHeight(_element) {
 
         var _elementClientHeight = _element.clientHeight;
 
+
+        //console.log(temp.replace("<br>", "\n"););
         if (_elementClientHeight) {
             return _elementClientHeight
         }
@@ -2712,6 +2763,15 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         }
     }
 
+    function capitalizeFirstLetter(string) {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
+    function _getMargin(_element, direction){
+        var style = _element.currentStyle || window.getComputedStyle(_element);
+        var margin = style['margin'+capitalizeFirstLetter(direction.toLowerCase())].replace('px','');
+        return isNumeric(margin) ? parseInt(margin): 0;
+    }
 
     function _create(_element) {
 
@@ -2726,12 +2786,13 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         var nodeClientRealHeight = _element.clientHeight == 0
             ? _getRealHeight(_element)
             : _element.clientHeight+_getMargin(_element, 'bottom') + _getMargin(_element, 'top') ;
-
+        
         if (nodeClientRealHeight === 0) {
             return;
         }
 
         cumulativeGlobal += nodeClientRealHeight;
+       // console.log(_element, cumulativeGlobal, nodeClientRealHeight);
 
         if (cursor.beforeGoal) {
             return;
@@ -2766,11 +2827,6 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
             
             if (_element.tagName === 'LI') {
                 _insert(_element.parentNode);
-                return;
-            }
-
-            if (['IFRAME', 'IMG', 'FIGURE'].indexOf(_element.tagName) != -1) {
-                _insert(_element);
                 return;
             }
 
@@ -2865,3 +2921,6 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         create: _initiateCreating
     }
 }
+
+
+
