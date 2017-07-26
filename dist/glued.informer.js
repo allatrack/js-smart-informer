@@ -68,7 +68,11 @@ if (!String.prototype.includes) {
         }
     };
 }
-
+if (!Array.isHTMLCollection) {
+    Array.isHTMLCollection = function (arg) {
+        return Object.prototype.toString.call(arg) === '[object HTMLCollection]';
+    };
+}
 if (![].includes) {
   Array.prototype.includes = function(searchElement/*, fromIndex*/) {
     'use strict';
