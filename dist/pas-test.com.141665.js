@@ -476,12 +476,11 @@ MarketGidBaseBlockC141665 = function (root_id, DR, fallback, containerId) {
                     var mGInformer = new parent.window.SmartInformerCreator('MarketGidComposite', self.id, 70, 80);
                     mGInformer.create();
 
-                    element.style.display = 'block';
-
                     if (!parent.window.document.getElementById('MarketGidCompositeRoot'+self.id)){
-                        var informer = parent.window.document.getElementById('MarketGidComposite'+self.id);
-                        informer.parentNode.removeChild(informer);
+                        element.parentNode.removeChild(element);
                         console.warn('SmartInformerCreator: can not create instance. Can not find place to paste informer block');
+                    } else {
+                        element.style.display = 'block';
                     }
                 }
             }
