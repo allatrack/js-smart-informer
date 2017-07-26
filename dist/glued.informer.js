@@ -2679,9 +2679,10 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
-    function _getMargin(_element, direction){
+   function _getMargin(_element, direction){
         var style = _element.currentStyle || window.getComputedStyle(_element);
-        return parseInt(style['margin'+capitalizeFirstLetter(direction.toLowerCase())].replace('px',''));
+        var margin = style['margin'+capitalizeFirstLetter(direction.toLowerCase())].replace('px','');
+        return isNumeric(margin) ? parseInt(margin): 0;
     }
     
     function _getRealHeight(_element) {
