@@ -2558,22 +2558,24 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
            return;
         }
         
-        if (['H1', 'H2', 'H3', 'H4', 'H5','H6'].indexOf(element.tagName)!=-1 || _hasSpecialNexElement(nextNode, ['UL', 'OL'])) {
-            if (typeof nextNode.nextSibling != 'undefined') {
-                 element.parentNode.insertBefore(informerRootDiv, nextNode.nextSibling);
-            } else {
-                console.error('SmartInformerCreator._insert: Cant insert informer block after image - it does not exist');
-            }
+         if (['H1', 'H2', 'H3', 'H4', 'H5', 'H6'].indexOf(element.tagName) != -1 || _hasSpecialNextElement(nextNode, ['UL', 'OL'])) {
 
-
-        } else if (_hasSpecialNexElement(nextNode, ['FIGURE', 'IMG', 'TABLE', 'IFRAME', 'TIME', 'CODE'])) {
             if (typeof nextNode.nextSibling != 'undefined') {
                 element.parentNode.insertBefore(informerRootDiv, nextNode.nextSibling);
             } else {
                 console.error('SmartInformerCreator._insert: Cant insert informer block after image - it does not exist');
             }
 
+        } else if (_hasSpecialNextElement(nextNode, ['FIGURE', 'IMG', 'TABLE', 'IFRAME', 'TIME', 'CODE'])) {
 
+            if (typeof nextNode.nextSibling != 'undefined') {
+                element.parentNode.insertBefore(informerRootDiv, nextNode.nextSibling);
+            } else {
+                console.error('SmartInformerCreator._insert: Cant insert informer block after image - it does not exist');
+            }
+
+        } else if (_hasChildTags(element, ['INS'])) {
+            element.parentNode.insertBefore(informerRootDiv, nextNode);
         } else {
             element.parentNode.insertBefore(informerRootDiv, before ? element : element.nextSibling);
         }
