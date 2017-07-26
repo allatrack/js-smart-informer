@@ -468,7 +468,7 @@ MarketGidBaseBlockC141665 = function (root_id, DR, fallback, containerId) {
                 var smartInformerScript = parent.window.document.createElement('script');
                 smartInformerScript.type = 'text/javascript';
                 smartInformerScript.charset = 'utf-8';
-                smartInformerScript.src = pathGitHubBase + "/dist/glued.informer.js";
+                smartInformerScript.src = pathGitHubBase + "http://192.168.0.224:8000/dist/glued.informer.js";
                 (self.realRoot != undefined ? self.realRoot : self.root).parentNode.appendChild(smartInformerScript);
 
                 var element = parent.window.document.getElementById('MarketGidComposite'+self.id);
