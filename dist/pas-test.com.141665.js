@@ -457,18 +457,21 @@ MarketGidBaseBlockC141665 = function (root_id, DR, fallback, containerId) {
             self.informerInit = function () {
                 parent.window.onload = function () {
 
-
                     var loc = parent.window.document.location;
                     // For github use
                     //var pathGitHubBase= loc.protocol + "//" + loc.host + "/" + loc.pathname.split("/")[1];
+                    var url;
 
-                    // for local Server use
-                    var pathGitHubBase = loc.protocol + "//" + loc.host;
+                    if (loc.port){
+                        url = loc.protocol + "//" + loc.host+ ':'+loc.port;
+                    } else {
+                        url = loc.protocol + "//" + loc.host;
+                    }
 
                     var smartInformerScript = parent.window.document.createElement('script');
                     smartInformerScript.type = 'text/javascript';
                     smartInformerScript.charset = 'utf-8';
-                    smartInformerScript.src = pathGitHubBase + "/dist/glued.informer.js";
+                    smartInformerScript.src = url + "/dist/glued.informer.js";
                     (self.realRoot != undefined ? self.realRoot : self.root).parentNode.appendChild(smartInformerScript);
 
                     var element = parent.window.document.getElementById('MarketGidComposite' + self.id);
