@@ -5357,14 +5357,8 @@ Thêm 1 món ngon gây mù lòa, thậm chí tử vong chúng ta ăn hàng ngày
                 // For github use
                 // var url = loc.protocol + "//" + loc.host + "/" + loc.pathname.split("/")[1];
                 // for local Server use
-
                 var url;
-
-                if (loc.port){
-                    url = loc.protocol + "//" + loc.host+ ':'+loc.port;
-                } else {
-                    url = loc.protocol + "//" + loc.host;
-                }
+                url = loc.protocol + "//" + loc.host;
                 s.src = url + "/dist/pas-test.com.141665.js?t=" + D.getYear() + D.getMonth() + D.getDate() + D.getHours();
                 c[ac](s);
             })();

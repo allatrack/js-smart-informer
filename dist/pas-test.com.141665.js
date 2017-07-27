@@ -459,14 +459,10 @@ MarketGidBaseBlockC141665 = function (root_id, DR, fallback, containerId) {
 
                     var loc = parent.window.document.location;
                     // For github use
-                    //var pathGitHubBase= loc.protocol + "//" + loc.host + "/" + loc.pathname.split("/")[1];
+                    // var url = loc.protocol + "//" + loc.host + "/" + loc.pathname.split("/")[1];
+                    // for local Server use
                     var url;
-
-                    if (loc.port){
-                        url = loc.protocol + "//" + loc.host+ ':'+loc.port;
-                    } else {
-                        url = loc.protocol + "//" + loc.host;
-                    }
+                    url = loc.protocol + "//" + loc.host;
 
                     var smartInformerScript = parent.window.document.createElement('script');
                     smartInformerScript.type = 'text/javascript';
@@ -481,7 +477,7 @@ MarketGidBaseBlockC141665 = function (root_id, DR, fallback, containerId) {
                         var d =new Date();
                         console.info('SmartInformerCreator start runing' , d.getMinutes() +':'+d.getSeconds() +':'+ d.getMilliseconds());
 
-                        var mGInformer = new parent.window.SmartInformerCreator('MarketGidComposite', self.id, 10, 20);
+                        var mGInformer = new parent.window.SmartInformerCreator('MarketGidComposite', self.id, 70, 80);
                         mGInformer.create();
 
                         element.style.display = 'block';
