@@ -2458,7 +2458,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         });
     }
 
-    function getArticleParent(node, _isCollection) {
+    function getArticleParent(node) {
 
         // try to find article body by id
         if (node['id']) {
@@ -2483,9 +2483,9 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
 
     function _extractArticle(node, _firstCall, _collectionLength) {
 
+    
         var firstCall = _firstCall || false;
         var collectionLength = _collectionLength || 0;
-
 
         if (node[0] && firstCall && collectionLength === 1) {
             var fn = node[0];
@@ -2497,7 +2497,8 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
 
                 var classes = [];
                 [].forEach.call(fn.classList, function (className) { classes.push(className); });
-                return document.querySelector(fn.tagName + '.' + classes.join('.'));
+
+                return document.querySelector(fn.tagName + '.' + classes.join('.')).parentNode;
             } else {
                 console.warn('SmartInformerCreator._extractArticle: ' +
                     'Cant select element from read DOM by using node -' + fn.tagName);
@@ -2542,6 +2543,12 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         }, document.cloneNode(true)).parse();
 
         article = _extractArticle(articleParsed.rootElements, true, articleParsed.rootElements.length);
+
+        /// overflow for https://farlofacile.com/ articles
+        if (article.parentNode && article.parentNode.children[0] && article.parentNode.children[0].tagName==='HEADER'){
+            article = article.parentNode;
+            console.log(article);
+        }
 
         if (!article) {
             console.error('SmartInformerCreator._parseArticle: Article In DOM not recognized');
@@ -2807,7 +2814,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
 
     function _create(_element) {
 
-        // console.log(_element);
+         console.log(_element);
         if (inserted) {
             return
         }
@@ -2829,13 +2836,15 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         }
 
         cumulativeGlobal += nodeClientRealHeight;
-        // console.log(_element, cumulativeGlobal, nodeClientRealHeight);
+         //console.log(_element, cumulativeGlobal, nodeClientRealHeight);
 
         if (cursor.beforeGoal) {
             return;
         }
 
         if (cursor.neededGoal) {
+
+
 
             if (_hasChildTags(_element, ['P', 'BLOCKQUOTE', 'PRE'])) {
                 cumulativeGlobal -= nodeClientRealHeight;
@@ -2862,7 +2871,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
                 return;
             }
 
-            if (['LI', 'INS', 'IMG', 'HEADER', 'FOOTER', 'TABLE'].indexOf(_element.tagName) != -1) {
+            if (['LI', 'INS', 'IMG',  'TABLE'].indexOf(_element.tagName) != -1) {
 
                 _insert(_element.parentNode);
                 return;
@@ -2956,8 +2965,11 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         }
 
         articleHeight = _getRealHeight(article);
+
         offsetHeightFrom = articleHeight * percentageFrom / 100;
         offsetHeightTo = articleHeight * percentageTo / 100;
+
+        console.log(articleHeight, offsetHeightFrom, offsetHeightTo);
     }
 
     _initMarketGidCompositeRootDiv();
