@@ -2542,7 +2542,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         }, document.cloneNode(true)).parse();
 
         article = _extractArticle(articleParsed.rootElements, true, articleParsed.rootElements.length);
-        //console.log(article);
+
         if (!article) {
             console.error('SmartInformerCreator._parseArticle: Article In DOM not recognized');
         } else {

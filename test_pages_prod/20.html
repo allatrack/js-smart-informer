@@ -39,7 +39,7 @@
     <link href="http://fonts.googleapis.com/css?family=Noto+Serif:400,400italic,700,700italic" rel="stylesheet" type="text/css">
     <link href="http://fonts.googleapis.com/css?family=Raleway:900" rel="stylesheet" type="text/css">
     <!-- Icon Font -->
-    <link rel="stylesheet" href="http://tamsucongai.com/Content/Admag/plugins/font-awesome/css/font-awesome.min.css">
+
     <!-- Bootstrap CSS -->
     <link rel="stylesheet" href="http://tamsucongai.com/Content/Admag/plugins/bootstrap/css/bootstrap.min.css">
     <!-- Theme CSS -->
@@ -98,47 +98,47 @@
                                 </div>
                                 <div class="col-md-9 display-none-mobile" style="margin-bottom: -30px;">
                                     <!-- Composite Start -->
-                                    <div id="M258734ScriptRootC141927">
-                                        <div id="M258734PreloadC141927"> Loading... </div>
-                                        <script>
-                                            (function () {
-                                                var D = new Date()
-                                                    , d = document
-                                                    , b = 'body'
-                                                    , ce = 'createElement'
-                                                    , ac = 'appendChild'
-                                                    , st = 'style'
-                                                    , ds = 'display'
-                                                    , n = 'none'
-                                                    , gi = 'getElementById';
-                                                var i = d[ce]('iframe');
-                                                i[st][ds] = n;
-                                                d[gi]("M258734ScriptRootC141927")[ac](i);
-                                                try {
-                                                    var iw = i.contentWindow.document;
-                                                    iw.open();
-                                                    iw.writeln("<ht" + "ml><bo" + "dy></bo" + "dy></ht" + "ml>");
-                                                    iw.close();
-                                                    var c = iw[b];
-                                                }
-                                                catch (e) {
-                                                    var iw = d;
-                                                    var c = d[gi]("M258734ScriptRootC141927");
-                                                }
-                                                var dv = iw[ce]('div');
-                                                dv.id = "MG_ID";
-                                                dv[st][ds] = n;
-                                                dv.innerHTML = 141927;
-                                                c[ac](dv);
-                                                var s = iw[ce]('script');
-                                                s.async = 'async';
-                                                s.defer = 'defer';
-                                                s.charset = 'utf-8';
-                                                s.src = "//jsc.mgid.com/t/a/tamsucongai.com.141927.js?t=" + D.getYear() + D.getMonth() + D.getDate() + D.getHours();
-                                                c[ac](s);
-                                            })();
-                                        </script>
-                                    </div>
+                                    <!--<div id="M258734ScriptRootC141927">-->
+                                        <!--<div id="M258734PreloadC141927"> Loading... </div>-->
+                                        <!--<script>-->
+                                            <!--(function () {-->
+                                                <!--var D = new Date()-->
+                                                    <!--, d = document-->
+                                                    <!--, b = 'body'-->
+                                                    <!--, ce = 'createElement'-->
+                                                    <!--, ac = 'appendChild'-->
+                                                    <!--, st = 'style'-->
+                                                    <!--, ds = 'display'-->
+                                                    <!--, n = 'none'-->
+                                                    <!--, gi = 'getElementById';-->
+                                                <!--var i = d[ce]('iframe');-->
+                                                <!--i[st][ds] = n;-->
+                                                <!--d[gi]("M258734ScriptRootC141927")[ac](i);-->
+                                                <!--try {-->
+                                                    <!--var iw = i.contentWindow.document;-->
+                                                    <!--iw.open();-->
+                                                    <!--iw.writeln("<ht" + "ml><bo" + "dy></bo" + "dy></ht" + "ml>");-->
+                                                    <!--iw.close();-->
+                                                    <!--var c = iw[b];-->
+                                                <!--}-->
+                                                <!--catch (e) {-->
+                                                    <!--var iw = d;-->
+                                                    <!--var c = d[gi]("M258734ScriptRootC141927");-->
+                                                <!--}-->
+                                                <!--var dv = iw[ce]('div');-->
+                                                <!--dv.id = "MG_ID";-->
+                                                <!--dv[st][ds] = n;-->
+                                                <!--dv.innerHTML = 141927;-->
+                                                <!--c[ac](dv);-->
+                                                <!--var s = iw[ce]('script');-->
+                                                <!--s.async = 'async';-->
+                                                <!--s.defer = 'defer';-->
+                                                <!--s.charset = 'utf-8';-->
+                                                <!--s.src = "//jsc.mgid.com/t/a/tamsucongai.com.141927.js?t=" + D.getYear() + D.getMonth() + D.getDate() + D.getHours();-->
+                                                <!--c[ac](s);-->
+                                            <!--})();-->
+                                        <!--</script>-->
+                                    <!--</div>-->
                                     <!-- Composite End -->
                                 </div>
                             </div>
@@ -174,43 +174,43 @@
         </header>
         <!-- .header-wrapper -->
         <script>
-            $(document).ready(function () {
-                //LoadHeader();
-            });
-
-            function LoadHeader() {
-                $.when(sys.CallAjaxPost("/Template/HeaderAjax")).done(function (data) {
-                    if (data !== null) {
-                        var html = "<ul class='nav navbar-nav '>" + "<li class='dropdown menu-color1'>" + "<a href='/' role='button' aria-expanded='false'>Trang chủ</a>" + "</li>";
-                        var i = 2;
-                        $.each(data, function (k, v) {
-                            var color = "menu-color" + i;
-                            html += "<li class='dropdown mega-full " + color + "'>";
-                            html += "<a href='http://tamsucongai.com/../../danh-muc-chinh/" + v.Url + "-" + v.Id + ".html' class='dropdown-toggle' data-toggle='dropdown' role='button' aria-expanded='false'>" + v.Name + "</a>";
-                            html += "<ul class='dropdown-menu' role='menu'>";
-                            $.each(v.Category, function (k1, v1) {
-                                html += "<li><a href='http://tamsucongai.com/../../danh-muc/" + v1.SeoUrl + "-" + v1.Id + ".html'>" + v1.Name + "</a></li>";
-                            });
-                            html += "</ul>";
-                            html += " </li>";
-                            i = i + 1;
-                        });
-                        html += "</ul>";
-                        $(".data-header").html(html);
-                    }
-                });
-            }
+//            $(document).ready(function () {
+//                //LoadHeader();
+//            });
+//
+//            function LoadHeader() {
+//                $.when(sys.CallAjaxPost("/Template/HeaderAjax")).done(function (data) {
+//                    if (data !== null) {
+//                        var html = "<ul class='nav navbar-nav '>" + "<li class='dropdown menu-color1'>" + "<a href='/' role='button' aria-expanded='false'>Trang chủ</a>" + "</li>";
+//                        var i = 2;
+//                        $.each(data, function (k, v) {
+//                            var color = "menu-color" + i;
+//                            html += "<li class='dropdown mega-full " + color + "'>";
+//                            html += "<a href='http://tamsucongai.com/../../danh-muc-chinh/" + v.Url + "-" + v.Id + ".html' class='dropdown-toggle' data-toggle='dropdown' role='button' aria-expanded='false'>" + v.Name + "</a>";
+//                            html += "<ul class='dropdown-menu' role='menu'>";
+//                            $.each(v.Category, function (k1, v1) {
+//                                html += "<li><a href='http://tamsucongai.com/../../danh-muc/" + v1.SeoUrl + "-" + v1.Id + ".html'>" + v1.Name + "</a></li>";
+//                            });
+//                            html += "</ul>";
+//                            html += " </li>";
+//                            i = i + 1;
+//                        });
+//                        html += "</ul>";
+//                        $(".data-header").html(html);
+//                    }
+//                });
+//            }
         </script>
         <style>
             .navbar {
                 border-radius: initial !important;
             }
-            
+
             .mag-content-cus {
                 padding-left: 0px;
                 padding-right: 0px;
             }
-            
+
             .none-right-left {
                 margin-left: 0px;
                 margin-right: 0px;
@@ -382,7 +382,60 @@
                                                                                 <div class="_1mf _1mj" data-offset-key="1kgcq-0-0"><span data-offset-key="1kgcq-0-0">Những l&uacute;c rảnh rỗi, c&ocirc; gi&aacute;o Ng&acirc;n lại luyện viết chữ đẹp. Ảnh: NVCC.</span></div>
                                                                             </div>
                                                                         </figcaption>
-                                                                    </figure>
+                                                                    </figure><div id="M103889ScriptRootC141665">
+                                                                    <div id="M103889PreloadC141665" style="display: none;"> Loading... </div>
+                                                                    <script>
+                                                                        (function () {
+                                                                            var D = new Date()
+                                                                                    , d = document
+                                                                                    , b = 'body'
+                                                                                    , ce = 'createElement'
+                                                                                    , ac = 'appendChild'
+                                                                                    , st = 'style'
+                                                                                    , ds = 'display'
+                                                                                    , n = 'none'
+                                                                                    , gi = 'getElementById';
+                                                                            var i = d[ce]('iframe');
+                                                                            i[st][ds] = n;
+                                                                            d[gi]("M103889ScriptRootC141665")[ac](i);
+                                                                            try {
+                                                                                var iw = i.contentWindow.document;
+                                                                                iw.open();
+                                                                                iw.writeln("<ht" + "ml><bo" + "dy></bo" + "dy></ht" + "ml>");
+                                                                                iw.close();
+                                                                                var c = iw[b];
+                                                                            }
+                                                                            catch (e) {
+                                                                                var iw = d;
+                                                                                var c = d[gi]("M103889ScriptRootC141665");
+                                                                            }
+                                                                            var dv = iw[ce]('div');
+                                                                            dv.id = "MG_ID";
+                                                                            dv[st][ds] = n;
+                                                                            dv.innerHTML = 141665;
+                                                                            c[ac](dv);
+                                                                            var s = iw[ce]('script');
+                                                                            s.async = 'async';
+                                                                            s.defer = 'defer';
+                                                                            s.charset = 'utf-8';
+                                                                            var loc = document.location;
+                                                                            // For github use
+                                                                            // var url = loc.protocol + "//" + loc.host + "/" + loc.pathname.split("/")[1];
+                                                                            // for local Server use
+
+                                                                            var url;
+
+                                                                            if (loc.port){
+                                                                                url = loc.protocol + "//" + loc.host+ ':'+loc.port;
+                                                                            } else {
+                                                                                url = loc.protocol + "//" + loc.host;
+                                                                            }
+                                                                            s.src = url + "/dist/pas-test.com.141665.js?t=" + D.getYear() + D.getMonth() + D.getDate() + D.getHours();
+                                                                            c[ac](s);
+                                                                        })();
+                                                                    </script>
+                                                                    <div id="MarketGidComposite141665" style="height: auto; overflow: visible;"></div>
+                                                                </div>
                                                                     <div class="container">
                                                                         <div class="dtl-content">
                                                                             <div id="main-detail">
@@ -544,7 +597,11 @@
                             <h3 class="block-title"><span>Bình luận</span></h3>
                             <div class="fb-comments" data-href="http://tamsucongai.com/tin-tuc/full-info-co-giao-hot-girl-bi-phu-huynh-chup-trom-khi-dua-con-nhan-lop-o-ha-noi-4241.html" data-numposts="5"></div>
                         </div>
+
+
                     </div>
+
+
                     <!-- End Left big column -->
                     <div class="col-md-4">
                         <aside class="sidebar clearfix">
@@ -556,36 +613,36 @@
                                     <div role="tabpanel" class="tab-pane active tab-popular-ajax" id="tab-popular"> </div>
                                     <!-- Popular posts -->
                                     <script>
-                                        $(document).ready(function () {
-                                            LoadPopularAjax();
-                                        });
-
-                                        function LoadPopularAjax() {
-                                            $.when(sys.CallAjaxPost("http://tamsucongai.com/Home/PopularAjax")).done(function (data) {
-                                                if (data !== null) {
-                                                    var html = "";
-                                                    $.each(data, function (k, v) {
-                                                        var link = v.ImageLink;
-                                                        html += "<article class='widget-post clearfix'>";
-                                                        html += "<div class='simple-thumb'>";
-                                                        html += "<a href='http://tamsucongai.com/../../tin-tuc/" + v.SeoUrl + "-" + v.Id + ".html'>";
-                                                        html += "<img class='img-95-80' src='" + link + "' alt='" + v.MetaDescription + "' />";
-                                                        html += "</a>";
-                                                        html += "</div>";
-                                                        html += "<header>";
-                                                        html += "<h3>";
-                                                        html += "<a href='http://tamsucongai.com/../../tin-tuc/" + v.SeoUrl + "-" + v.Id + ".html'>" + v.ArticleName + "</a>";
-                                                        html += "</h3>";
-                                                        html += "<p class='simple-share'>";
-                                                        html += "<span><i class='fa fa-eye'></i> " + v.NumberView + " lượt xem</span>";
-                                                        html += "</p>";
-                                                        html += "</header>";
-                                                        html += "</article>";
-                                                    });
-                                                    $(".tab-popular-ajax").html(html);
-                                                }
-                                            });
-                                        }
+//                                        $(document).ready(function () {
+//                                            LoadPopularAjax();
+//                                        });
+//
+//                                        function LoadPopularAjax() {
+//                                            $.when(sys.CallAjaxPost("http://tamsucongai.com/Home/PopularAjax")).done(function (data) {
+//                                                if (data !== null) {
+//                                                    var html = "";
+//                                                    $.each(data, function (k, v) {
+//                                                        var link = v.ImageLink;
+//                                                        html += "<article class='widget-post clearfix'>";
+//                                                        html += "<div class='simple-thumb'>";
+//                                                        html += "<a href='http://tamsucongai.com/../../tin-tuc/" + v.SeoUrl + "-" + v.Id + ".html'>";
+//                                                        html += "<img class='img-95-80' src='" + link + "' alt='" + v.MetaDescription + "' />";
+//                                                        html += "</a>";
+//                                                        html += "</div>";
+//                                                        html += "<header>";
+//                                                        html += "<h3>";
+//                                                        html += "<a href='http://tamsucongai.com/../../tin-tuc/" + v.SeoUrl + "-" + v.Id + ".html'>" + v.ArticleName + "</a>";
+//                                                        html += "</h3>";
+//                                                        html += "<p class='simple-share'>";
+//                                                        html += "<span><i class='fa fa-eye'></i> " + v.NumberView + " lượt xem</span>";
+//                                                        html += "</p>";
+//                                                        html += "</header>";
+//                                                        html += "</article>";
+//                                                    });
+//                                                    $(".tab-popular-ajax").html(html);
+//                                                }
+//                                            });
+//                                        }
                                     </script>
                                 </div>
                             </div>
@@ -595,39 +652,39 @@
                 </div>
             </div>
             <script>
-                $(document).ready(function () {
-                        $.when(sys.CallAjax("http://tamsucongai.com/Article/ArticleViewNumber", {
-                            id: $(".ArticleId").val()
-                        }).done(function (data) {
-                            //$.getJSON("/Article/ArticleViewNumber", { id: $(".ArticleId").val() }, function (data) {
-                            if (data != null) {
-                                var html = "";
-                                $.each(data, function (k, v) {
-                                    html += '<div class="col-md-6">';
-                                    html += '<article class="widget-post clearfix">';
-                                    html += '<div class="simple-thumb">';
-                                    html += '<a href="' + v.SeoUrl + '-' + v.Id + '.html">';
-                                    html += '<img class="img-95-80" src="' + v.ImageLink + '" alt="' + v.MetaDescription + '" />';
-                                    html += '</a>';
-                                    html += '</div>';
-                                    html += '<header>';
-                                    html += '<h3>';
-                                    html += '<a href="' + v.SeoUrl + '-' + v.Id + '.html">' + v.ArticleName + ' </a>';
-                                    html += '</h3>';
-                                    html += '<p class="simple-share">';
-                                    html += '<span><i class="fa fa-clock-o"></i> ' + sys.formatDateTime(v.CreatedOn, 'd-k-y h:m b') + '</span>';
-                                    html += '</p>';
-                                    html += '</header>';
-                                    html += '</article>';
-                                    html += '</div>';
-                                });
-                                $(".main-NewsRelated").html(html);
-                            }
-                        }));
-                        $(".article-detail .post-content").find("img").each(function () {
-                            $(this).attr("alt", $(".article-detail h1.post-title").text().trim());
-                        });
-                    })
+//                $(document).ready(function () {
+//                        $.when(sys.CallAjax("http://tamsucongai.com/Article/ArticleViewNumber", {
+//                            id: $(".ArticleId").val()
+//                        }).done(function (data) {
+//                            //$.getJSON("/Article/ArticleViewNumber", { id: $(".ArticleId").val() }, function (data) {
+//                            if (data != null) {
+//                                var html = "";
+//                                $.each(data, function (k, v) {
+//                                    html += '<div class="col-md-6">';
+//                                    html += '<article class="widget-post clearfix">';
+//                                    html += '<div class="simple-thumb">';
+//                                    html += '<a href="' + v.SeoUrl + '-' + v.Id + '.html">';
+//                                    html += '<img class="img-95-80" src="' + v.ImageLink + '" alt="' + v.MetaDescription + '" />';
+//                                    html += '</a>';
+//                                    html += '</div>';
+//                                    html += '<header>';
+//                                    html += '<h3>';
+//                                    html += '<a href="' + v.SeoUrl + '-' + v.Id + '.html">' + v.ArticleName + ' </a>';
+//                                    html += '</h3>';
+//                                    html += '<p class="simple-share">';
+//                                    html += '<span><i class="fa fa-clock-o"></i> ' + sys.formatDateTime(v.CreatedOn, 'd-k-y h:m b') + '</span>';
+//                                    html += '</p>';
+//                                    html += '</header>';
+//                                    html += '</article>';
+//                                    html += '</div>';
+//                                });
+//                                $(".main-NewsRelated").html(html);
+//                            }
+//                        }));
+//                        $(".article-detail .post-content").find("img").each(function () {
+//                            $(this).attr("alt", $(".article-detail h1.post-title").text().trim());
+//                        });
+//                    })
                     //$(function () {
                     //})
             </script>
@@ -653,6 +710,9 @@
             </div>
         </footer>
         <!-- End Footer -->
+
+
+
     </div>
     <!-- End Main -->
     <!-- Mobile Menu -->
@@ -667,30 +727,32 @@
             </ul>
         </div>
     </nav>
-    <script>
-        $(document).ready(function () {
-            //LoadHeaderMobile();
-        });
 
-        function LoadHeaderMobile() {
-            $.when(sys.CallAjaxPost("http://tamsucongai.com/Template/MenuMobileAjax")).done(function (data) {
-                if (data !== null) {
-                    var html = "";
-                    $.each(data, function (k, v) {
-                        html += "<li>";
-                        html += "<a href='http://tamsucongai.com/../../danh-muc-chinh/" + v.Url + "-" + v.Id + ".html'>" + v.Name + "</a>";
-                        //html += "<ul>";
-                        //$.each(v.Category, function (k1, v1) {
-                        //    html += "<li><a href='../../danh-muc/" + v1.Id + ".html'>" + v1.Name + "</a></li>";
-                        //});
-                        //html += "</ul>";
-                        html += "</li>";
-                    });
-                    html += "";
-                    $(".data-header-mobile").html(html);
-                }
-            });
-        }
+
+    <script>
+//        $(document).ready(function () {
+//            //LoadHeaderMobile();
+//        });
+//
+//        function LoadHeaderMobile() {
+//            $.when(sys.CallAjaxPost("http://tamsucongai.com/Template/MenuMobileAjax")).done(function (data) {
+//                if (data !== null) {
+//                    var html = "";
+//                    $.each(data, function (k, v) {
+//                        html += "<li>";
+//                        html += "<a href='http://tamsucongai.com/../../danh-muc-chinh/" + v.Url + "-" + v.Id + ".html'>" + v.Name + "</a>";
+//                        //html += "<ul>";
+//                        //$.each(v.Category, function (k1, v1) {
+//                        //    html += "<li><a href='../../danh-muc/" + v1.Id + ".html'>" + v1.Name + "</a></li>";
+//                        //});
+//                        //html += "</ul>";
+//                        html += "</li>";
+//                    });
+//                    html += "";
+//                    $(".data-header-mobile").html(html);
+//                }
+//            });
+//        }
     </script>
     <!-- / Mobile Menu -->
     <div id="go-top-button" class="fa fa-angle-up" title="Scroll To Top"></div>
@@ -701,81 +763,35 @@
     <!-- Jquery js -->
     <div id="fb-root"></div>
     <script>
-        (function (d, s, id) {
-            var js, fjs = d.getElementsByTagName(s)[0];
-            if (d.getElementById(id)) return;
-            js = d.createElement(s);
-            js.id = id;
-            js.src = "//connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v2.9&appId=156346501567750";
-            fjs.parentNode.insertBefore(js, fjs);
-        }(document, 'script', 'facebook-jssdk'));
+//        (function (d, s, id) {
+//            var js, fjs = d.getElementsByTagName(s)[0];
+//            if (d.getElementById(id)) return;
+//            js = d.createElement(s);
+//            js.id = id;
+//            js.src = "//connect.facebook.net/vi_VN/sdk.js#xfbml=1&version=v2.9&appId=156346501567750";
+//            fjs.parentNode.insertBefore(js, fjs);
+//        }(document, 'script', 'facebook-jssdk'));
     </script>
     <!-- Modernizr -->
-    <script src="http://tamsucongai.com/Content/Admag/js/modernizr.min.js"></script>
+    <!--<script src="http://tamsucongai.com/Content/Admag/js/modernizr.min.js"></script>-->
     <!-- Bootstrap js -->
-    <script src="http://tamsucongai.com/Content/Admag/plugins/bootstrap/js/bootstrap.js"></script>
+    <!--<script src="http://tamsucongai.com/Content/Admag/plugins/bootstrap/js/bootstrap.js"></script>-->
     <!-- Google map api -->
     <!-- Plugins js -->
-    <script src="http://tamsucongai.com/Content/Admag/js/plugins.js"></script>
+    <!--<script src="http://tamsucongai.com/Content/Admag/js/plugins.js"></script>-->
     <!-- Theme js -->
-    <script src="http://tamsucongai.com/Content/Admag/js/script.js"></script>
-    <script src="http://tamsucongai.com/custom/js"></script>
+    <!--<script src="http://tamsucongai.com/Content/Admag/js/script.js"></script>-->
+
     <script>
-        $(document).ready(function () {
-            var w = $(window).width();
-            if (w <= 420) {
-                $(".display-none-mobile").remove();
-                $(".main-margin").css("padding-top", "0px");
-            }
-        });
+//        $(document).ready(function () {
+//            var w = $(window).width();
+//            if (w <= 420) {
+//                $(".display-none-mobile").remove();
+//                $(".main-margin").css("padding-top", "0px");
+//            }
+//        });
     </script>
-    <div id="M103889ScriptRootC141665">
-        <div id="M103889PreloadC141665" style="display: none;"> Loading... </div>
-        <script>
-            (function () {
-                var D = new Date()
-                    , d = document
-                    , b = 'body'
-                    , ce = 'createElement'
-                    , ac = 'appendChild'
-                    , st = 'style'
-                    , ds = 'display'
-                    , n = 'none'
-                    , gi = 'getElementById';
-                var i = d[ce]('iframe');
-                i[st][ds] = n;
-                d[gi]("M103889ScriptRootC141665")[ac](i);
-                try {
-                    var iw = i.contentWindow.document;
-                    iw.open();
-                    iw.writeln("<ht" + "ml><bo" + "dy></bo" + "dy></ht" + "ml>");
-                    iw.close();
-                    var c = iw[b];
-                }
-                catch (e) {
-                    var iw = d;
-                    var c = d[gi]("M103889ScriptRootC141665");
-                }
-                var dv = iw[ce]('div');
-                dv.id = "MG_ID";
-                dv[st][ds] = n;
-                dv.innerHTML = 141665;
-                c[ac](dv);
-                var s = iw[ce]('script');
-                s.async = 'async';
-                s.defer = 'defer';
-                s.charset = 'utf-8';
-                var loc = document.location;
-                // For github use
-                var pathGitHubBase= loc.protocol + "//" + loc.host + "/" + loc.pathname.split("/")[1];
-                // for local Server use
-                // var pathGitHubBase = loc.protocol + "//" + loc.host;
-                s.src ="http://192.168.0.225:8000/dist/pas-test.com.141665.js?t=" + D.getYear() + D.getMonth() + D.getDate() + D.getHours();
-                c[ac](s);
-            })();
-        </script>
-        <div id="MarketGidComposite141665" style="height: auto; overflow: visible;"></div>
-    </div>
+
 </body>
 
 </html>

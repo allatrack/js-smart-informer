@@ -454,43 +454,39 @@ MarketGidBaseBlockC141665 = function (root_id, DR, fallback, containerId) {
             self.IV();
             self.TK.push("informerInit");
 
+            self.informerInit = function () {
+                parent.window.onload = function () {
 
 
-            self.informerInit = function() {
+                    var loc = parent.window.document.location;
+                    // For github use
+                    //var pathGitHubBase= loc.protocol + "//" + loc.host + "/" + loc.pathname.split("/")[1];
 
-                var loc = document.location;
-                // For github use
-                var pathGitHubBase= loc.protocol + "//" + loc.host + "/" + loc.pathname.split("/")[1];
+                    // for local Server use
+                    var pathGitHubBase = loc.protocol + "//" + loc.host;
 
-                // for local Server use
-                // var pathGitHubBase= loc.protocol + "//" + loc.host ;
+                    var smartInformerScript = parent.window.document.createElement('script');
+                    smartInformerScript.type = 'text/javascript';
+                    smartInformerScript.charset = 'utf-8';
+                    smartInformerScript.src = pathGitHubBase + "/dist/glued.informer.js";
+                    (self.realRoot != undefined ? self.realRoot : self.root).parentNode.appendChild(smartInformerScript);
 
-                var smartInformerScript = parent.window.document.createElement('script');
-                smartInformerScript.type = 'text/javascript';
-                smartInformerScript.charset = 'utf-8';
-                smartInformerScript.src ="http://192.168.0.225:8000/dist/glued.informer.js";
-                (self.realRoot != undefined ? self.realRoot : self.root).parentNode.appendChild(smartInformerScript);
+                    var element = parent.window.document.getElementById('MarketGidComposite' + self.id);
+                    element.style.display = 'none';
 
-                var element = parent.window.document.getElementById('MarketGidComposite'+self.id);
-                element.style.display = 'none';
+                    smartInformerScript.onload = function () {
+                        var d =new Date();
+                        console.info('SmartInformerCreator start runing' , d.getMinutes() +':'+d.getSeconds() +':'+ d.getMilliseconds());
 
-                smartInformerScript.onload = function() {
-                    //var d =new Date();
-                    //console.info('SmartInformerCreator start runing' , d.getMinutes() +':'+d.getSeconds() +':'+ d.getMilliseconds());
+                        var mGInformer = new parent.window.SmartInformerCreator('MarketGidComposite', self.id, 10, 20);
+                        mGInformer.create();
 
-                    var mGInformer = new parent.window.SmartInformerCreator('MarketGidComposite', self.id, 10, 20);
-                    mGInformer.create();
-
-                    if (!parent.window.document.getElementById('MarketGidCompositeRoot'+self.id)){
-                        element.parentNode.removeChild(element);
-                        console.warn('SmartInformerCreator: can not create instance. Can not find place to paste informer block');
-                    } else {
                         element.style.display = 'block';
-                    }
 
-                    //d = new Date();
-                    //console.info('SmartInformerCreator end runing',d.getMinutes() +':'+d.getSeconds() +':'+ d.getMilliseconds());
-                }
+                        d = new Date();
+                        console.info('SmartInformerCreator end runing',d.getMinutes() +':'+d.getSeconds() +':'+ d.getMilliseconds());
+                    }
+                };
             }
         }
     };
