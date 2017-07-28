@@ -454,9 +454,11 @@ MarketGidBaseBlockC141665 = function (root_id, DR, fallback, containerId) {
             self.IV();
             self.TK.push("informerInit");
 
-            self.informerInit = function () {
-                parent.window.onload = function () {
+            var loaded = false;
 
+            self.informerInit = function () {
+                parent.window.addEventListener('load', function(e) {
+                    //parent.window.addEventListener("load", function(){
                     var loc = parent.window.document.location;
                     // For github use
                     // var url = loc.protocol + "//" + loc.host + "/" + loc.pathname.split("/")[1];
@@ -474,18 +476,19 @@ MarketGidBaseBlockC141665 = function (root_id, DR, fallback, containerId) {
                     element.style.display = 'none';
 
                     smartInformerScript.onload = function () {
-                        var d =new Date();
-                        console.info('SmartInformerCreator start runing' , d.getMinutes() +':'+d.getSeconds() +':'+ d.getMilliseconds());
+                        var d = new Date();
+                        console.info('SmartInformerCreator start runing', d.getMinutes() + ':' + d.getSeconds() + ':' + d.getMilliseconds());
 
-                        var mGInformer = new parent.window.SmartInformerCreator('MarketGidComposite', self.id, 10, 20);
+                        var mGInformer = new parent.window.SmartInformerCreator('MarketGidComposite', self.id, 70, 80);
                         mGInformer.create();
 
                         element.style.display = 'block';
 
                         d = new Date();
-                        console.info('SmartInformerCreator end runing',d.getMinutes() +':'+d.getSeconds() +':'+ d.getMilliseconds());
+                        console.info('SmartInformerCreator end runing', d.getMinutes() + ':' + d.getSeconds() + ':' + d.getMilliseconds());
                     }
-                };
+                    //);
+                })
             }
         }
     };

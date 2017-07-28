@@ -1,3 +1,61 @@
+// Источник: https://gist.github.com/k-gun/c2ea7c49edf7b757fe9561ba37cb19ca
+;(function () {
+    // helpers
+    var regExp = function (name) {
+        return new RegExp('(^| )' + name + '( |$)');
+    };
+    var forEach = function (list, fn, scope) {
+        for (var i = 0; i < list.length; i++) {
+            fn.call(scope, list[i]);
+        }
+    };
+
+    // class list object with basic methods
+    function ClassList(element) {
+        this.element = element;
+    }
+
+    ClassList.prototype = {
+        add: function () {
+            forEach(arguments, function (name) {
+                if (!this.contains(name)) {
+                    this.element.className += ' ' + name;
+                }
+            }, this);
+        },
+        remove: function () {
+            forEach(arguments, function (name) {
+                this.element.className =
+                    this.element.className.replace(regExp(name), '');
+            }, this);
+        },
+        toggle: function (name) {
+            return this.contains(name)
+                ? (this.remove(name), false) : (this.add(name), true);
+        },
+        contains: function (name) {
+            return regExp(name).test(this.element.className);
+        },
+        // bonus..
+        replace: function (oldName, newName) {
+            this.remove(oldName), this.add(newName);
+        }
+    };
+
+    // IE8/9, Safari
+    if (!('classList' in Element.prototype)) {
+        Object.defineProperty(Element.prototype, 'classList', {
+            get: function () {
+                return new ClassList(this);
+            }
+        });
+    }
+
+    // replace() support for others
+    if (window.DOMTokenList && DOMTokenList.prototype.replace == null) {
+        DOMTokenList.prototype.replace = ClassList.prototype.replace;
+    }
+})();
 "document" in self && ("classList" in document.createElement("_") && (!document.createElementNS || "classList" in document.createElementNS("http://www.w3.org/2000/svg", "g")) || !function (t) {
     "use strict";
     if ("Element" in t) {
@@ -55,7 +113,7 @@
 
 // For internet explorer only
 if (!String.prototype.includes) {
-    String.prototype.includes = function(search, start) {
+    String.prototype.includes = function (search, start) {
         'use strict';
         if (typeof start !== 'number') {
             start = 0;
@@ -74,34 +132,34 @@ if (!Array.isHTMLCollection) {
     };
 }
 if (![].includes) {
-  Array.prototype.includes = function(searchElement/*, fromIndex*/) {
-    'use strict';
-    var O = Object(this);
-    var len = parseInt(O.length) || 0;
-    if (len === 0) {
-      return false;
-    }
-    var n = parseInt(arguments[1]) || 0;
-    var k;
-    if (n >= 0) {
-      k = n;
-    } else {
-      k = len + n;
-      if (k < 0) {
-        k = 0;
-      }
-    }
-    while (k < len) {
-      var currentElement = O[k];
-      if (searchElement === currentElement ||
-         (searchElement !== searchElement && currentElement !== currentElement)
-      ) {
-        return true;
-      }
-      k++;
-    }
-    return false;
-  };
+    Array.prototype.includes = function (searchElement/*, fromIndex*/) {
+        'use strict';
+        var O = Object(this);
+        var len = parseInt(O.length) || 0;
+        if (len === 0) {
+            return false;
+        }
+        var n = parseInt(arguments[1]) || 0;
+        var k;
+        if (n >= 0) {
+            k = n;
+        } else {
+            k = len + n;
+            if (k < 0) {
+                k = 0;
+            }
+        }
+        while (k < len) {
+            var currentElement = O[k];
+            if (searchElement === currentElement ||
+                (searchElement !== searchElement && currentElement !== currentElement)
+            ) {
+                return true;
+            }
+            k++;
+        }
+        return false;
+    };
 }
 
 if (!Array.prototype.indexOf) {
@@ -2282,6 +2340,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         console.error('SmartInformerCreator.constructor: _percentageFrom > _percentageTo. This must be _percentageFrom < _percentageTo');
     }
 
+    var self = this;
     var rootId = id;
     var marketGidCompositeId = smartInformerName + id;
     var smartInformer = document.getElementById(marketGidCompositeId);
@@ -2290,11 +2349,26 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
     var percentageFrom = _percentageFrom === null || _percentageFrom === undefined ? 30 : _percentageFrom;
     var percentageTo = _percentageTo === null || _percentageTo === undefined ? 60 : _percentageTo;
     var articleHeight = 0;
+    var articleWidth = 0;
     var articleParsed;
     var article;
     var informerRootDiv;
     var offsetHeightFrom;
     var offsetHeightTo;
+
+    var cumulativeGlobal = 0;
+    var inserted = false;
+    var cursor = {};
+
+    Object.defineProperties(this, {
+        articleAcceptedWidth: {get: function () {return articleWidth - (articleWidth * 10 / 100);}},
+    });
+
+    Object.defineProperties(cursor, {
+        beforeGoal: {get: function () {return cumulativeGlobal === 0 || cumulativeGlobal <= offsetHeightFrom;}},
+        neededGoal: {get: function () {return cumulativeGlobal >= offsetHeightFrom && cumulativeGlobal <= offsetHeightTo;}},
+        afterGoal: {get: function () {return cumulativeGlobal >= offsetHeightTo || cumulativeGlobal <= articleHeight;}}
+    });
 
     function _initMarketGidCompositeRootDiv() {
 
@@ -2480,10 +2554,9 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         }
     }
 
-
     function _extractArticle(node, _firstCall, _collectionLength) {
 
-    
+
         var firstCall = _firstCall || false;
         var collectionLength = _collectionLength || 0;
 
@@ -2544,10 +2617,32 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
 
         article = _extractArticle(articleParsed.rootElements, true, articleParsed.rootElements.length);
 
-        /// overflow for https://farlofacile.com/ articles
-        if (article.parentNode && article.parentNode.children[0] && article.parentNode.children[0].tagName==='HEADER'){
+        console.log(articleParsed.rootElements);
+
+        /// workaround for https://farlofacile.com/ articles
+        if (article && article.parentNode && article.parentNode.children[0] && article.parentNode.children[0].tagName === 'HEADER') {
             article = article.parentNode;
-            console.log(article);
+        }
+
+        /// workaround for https://dolartoday.com articles
+        if (article && article.id ==='wrap' && article.children[0].id ==='content') {
+            article = article.children[0];
+        }
+
+        // workaround for https://espana-diario.es
+        if (loc.host ==='espana-diario.es' ||loc.host ==='www.espana-diario.es' ||loc.host ==='localhost' || loc.host ==='192.168.0.225:8000'){
+            var logo = document.querySelector('a.logo.custom-logo-18');
+            if (logo && logo.href=== 'https://espana-diario.es/'){
+                article = document.getElementsByClassName('content_text')[0];
+            }
+        }
+
+        // woraround for 4khdvideo
+        if (loc.host ==='4khdvideo.tv' ||loc.host ==='www.4khdvideo.tv' || loc.host ==='localhost' || loc.host ==='192.168.0.225:8000'){
+            var logo = document.querySelector('div#page-wrap > center> img[alt="4khdvideo"]');
+            if (logo && logo.alt=== '4khdvideo'){
+                article = document.getElementsByClassName('detail-left-side')[0];
+            }
         }
 
         if (!article) {
@@ -2569,6 +2664,61 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
 
     }
 
+    function _isSuitableWidth(width) {
+        if (articleWidth === 0 &&self.articleAcceptedWidth ){
+            return true;
+        }
+        return width <= articleWidth && self.articleAcceptedWidth <= width;
+    }
+
+    function _findClosestSuitableNode(element) {
+
+        if (!element || !element.parentNode) {
+            return element;
+        }
+
+        //console.log(_isSuitableWidth(_getRealWidth(element.parentNode)));
+        if (_isSuitableWidth(_getRealWidth(element.parentNode))) {
+
+
+            var _childWithSuitableWidth = _getChildWithSuitableWidth(element.parentNode);
+
+            if (_childWithSuitableWidth) {
+                return _childWithSuitableWidth;
+            }
+
+            return element.parentNode;
+        }
+
+        return _findClosestSuitableNode(element.parentNode);
+    }
+
+    function _getChildWithSuitableWidth(element) {
+
+        if (!element.children) {
+
+            console.warn('SmartInformerCreator._getChildWithSuitableWidth: ' +
+                'Children were waited but, ' + typeof element.children + 'given');
+            return null;
+        }
+
+        var result = null;
+        if (element.children) {
+            [].forEach.call(element.children, function (node) {
+                (!result) && (result = _isSuitableWidth(_getRealWidth(node)) ? node : null);
+            });
+            return result;
+        }
+
+        return _isSuitableWidth(_getRealWidth(element.children[0])) ? element.children[0] : null;
+    }
+
+    function _getNexNode(element){
+         var nextNodeIndex = Array.prototype.indexOf.call(element.parentNode.children, element);
+         var nextNode = element.parentNode.children[nextNodeIndex + 1];
+
+         return nextNode && ! nextNode.clientHeight ? _getNexNode(nextNode) : nextNode;
+    }
     /**
      * Insert informer to DOM
      *
@@ -2592,8 +2742,8 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         }
 
         var before = _before || false;
-        var nextNodeIndex = Array.prototype.indexOf.call(element.parentNode.children, element);
-        var nextNode = element.parentNode.children[nextNodeIndex + 1];
+        var nextNode =_getNexNode(element);
+
 
         if (_hasChildTags(element, ['FIGURE', 'IMG', 'TABLE', 'IFRAME', 'TIME', 'CODE'])) {
             // todo: Provide for going down to paste in
@@ -2604,11 +2754,30 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
             inserted = true;
             return;
         }
-        
-        if (_hasChildWithClass(nextNode, ['SC_TBlock', 'fb_iframe_widget', 'twitter-tweet-button'])) {
+
+        if (_hasChildWithClass(nextNode, ['SC_TBlock', 'fb_iframe_widget', 'twitter-tweet-button', 'adsbygoogle'])) {
             _insert(nextNode, false);
             return;
         }
+
+        //if there is smaller width than article's, - accept
+        //10% lower than articles actual width
+        if (!_isSuitableWidth(element.clientWidth)) {
+
+
+            // find parent with suitable width
+            var suitableNode = _findClosestSuitableNode(element);
+
+            if(suitableNode.parentNode) {
+                suitableNode.parentNode.insertBefore(informerRootDiv, suitableNode);
+            } else {
+                element.parentNode.insertBefore(informerRootDiv, before ? element : element.nextSibling);
+            }
+
+            _endInsert(smartInformer);
+            return;
+        }
+
 
 
         if (['H1', 'H2', 'H3', 'H4', 'H5', 'H6'].indexOf(element.tagName) != -1 || _hasSpecialNextElement(nextNode, ['UL', 'OL'])) {
@@ -2632,19 +2801,22 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
             element.parentNode.insertBefore(informerRootDiv, before ? element : element.nextSibling);
         }
 
+        _endInsert(smartInformer);
+    }
+    function _endInsert(smartInformer){
         informerRootDiv = document.getElementById(informerRootDiv.id);
         informerRootDiv.appendChild(smartInformer);
         inserted = true;
     }
-
     /**
      * You MUST insert informer block after image
      */
     function _hasSpecialNextElement(nextNode, specialTags) {
 
-        return (typeof nextNode != 'undefined')
+        var result = (typeof nextNode != 'undefined')
             && (specialTags.indexOf(nextNode.tagName) != -1)
             || _hasChildTags(nextNode, specialTags);
+        return result;
     }
 
     function _hasChildTags(node, tags) {
@@ -2760,16 +2932,6 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         return result;
     }
 
-    var cumulativeGlobal = 0;
-    var inserted = false;
-    var cursor = {};
-
-    Object.defineProperties(cursor, {
-        beforeGoal: {get: function () {return cumulativeGlobal === 0 || cumulativeGlobal <= offsetHeightFrom;}},
-        neededGoal: {get: function () {return cumulativeGlobal >= offsetHeightFrom && cumulativeGlobal <= offsetHeightTo;}},
-        afterGoal: {get: function () {return cumulativeGlobal >= offsetHeightTo || cumulativeGlobal <= articleHeight;}}
-    });
-
     function _getRealHeight(_element) {
 
         if (!_element) {
@@ -2778,7 +2940,6 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
 
         var _elementClientHeight = _element.clientHeight;
 
-        //console.log(temp.replace("<br>", "\n"););
         if (_elementClientHeight) {
             return _elementClientHeight
         }
@@ -2788,10 +2949,40 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         }
 
         [].forEach.call(_element.children, function (node) {
-            _elementClientHeight = node.children ? _getRealHeight(node) : node.clientHeight + _getMargin(node, 'bottom') + _getMargin(node, 'top');
+            _elementClientHeight = node.children
+                ? _getRealHeight(node)
+                : node.clientHeight + _getMargin(node, 'bottom') + _getMargin(node, 'top');
         });
 
         return _elementClientHeight;
+    }
+
+    function _getRealWidth(_element) {
+        if (!_element) {
+            return;
+        }
+
+        var _elementClientWidth = _element.clientWidth;
+
+        if (_elementClientWidth) {
+            return _elementClientWidth;
+        }
+
+        if (_element.children && _element.children.length === 0 && _elementClientWidth === 0) {
+            return _elementClientWidth;
+        }
+
+        if (! _element.children ) {
+            return _elementClientWidth;
+        }
+
+        [].forEach.call(_element.children, function (node) {
+            _elementClientWidth = node.children
+                ? _getRealWidth(node)
+                : node.clientWidth + _getRealWidth(node, 'left') + _getMargin(node, 'right');
+        });
+
+        return _elementClientWidth;
     }
 
     function _createIntoParentSibling(_el) {
@@ -2802,19 +2993,29 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         }
     }
 
-    function capitalizeFirstLetter(string) {
+    function _capitalizeFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
     function _getMargin(_element, direction) {
-        var style = _element.currentStyle || window.getComputedStyle(_element);
-        var margin = style['margin' + capitalizeFirstLetter(direction.toLowerCase())].replace('px', '');
-        return isNumeric(margin) ? parseInt(margin) : 0;
+
+        try {
+            var style = _element.currentStyle || window.getComputedStyle(_element);
+            var margin = style['margin' + _capitalizeFirstLetter(direction.toLowerCase())].replace('px', '');
+            return isNumeric(margin) ? parseInt(margin) : 0;
+        }catch(e){
+          console.error(e);
+            return 0;
+        }
     }
 
     function _create(_element) {
 
-         console.log(_element);
+        //if (_hasAddInside(_element)) {
+        //    return
+        //}
+
+
         if (inserted) {
             return
         }
@@ -2836,15 +3037,13 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         }
 
         cumulativeGlobal += nodeClientRealHeight;
-         //console.log(_element, cumulativeGlobal, nodeClientRealHeight);
+        //console.log(_element, cumulativeGlobal, nodeClientRealHeight);
 
         if (cursor.beforeGoal) {
             return;
         }
 
         if (cursor.neededGoal) {
-
-
 
             if (_hasChildTags(_element, ['P', 'BLOCKQUOTE', 'PRE'])) {
                 cumulativeGlobal -= nodeClientRealHeight;
@@ -2871,7 +3070,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
                 return;
             }
 
-            if (['LI', 'INS', 'IMG',  'TABLE'].indexOf(_element.tagName) != -1) {
+            if (['LI', 'INS', 'IMG', 'TABLE'].indexOf(_element.tagName) != -1) {
 
                 _insert(_element.parentNode);
                 return;
@@ -2882,6 +3081,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         }
 
         if (cursor.afterGoal) {
+
             cumulativeGlobal -= nodeClientRealHeight;
 
             if (nodeClientRealHeight < articleHeight && ['IFRAME', 'IMG', 'FIGURE', 'TIME', 'CODE'].indexOf(_element.tagName) != -1) {
@@ -2958,18 +3158,141 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         }
     }
 
+    var cssClasses = ['comments', 'related', 'share', 'at-share-btn-elements'];
+    var ids = ['ad-space', 'fb_comments_div', 'ad-space', 'div-gpt-ad',
+        'MarketGidScript','MarketGidScriptRoot',  'disqus_comments_div',
+        'ScriptRoot', 'Preload', 'MarketGidComposite', 'SC_TBlock'];
+
+    function _hasAddInside(_element) {
+        var cantBeCalculated = false;
+
+        ids.forEach(function (id) {
+           if(!cantBeCalculated) {
+               cantBeCalculated = _element.id.includes(id)
+            }
+        });
+
+        cssClasses.forEach(function (cssClass) {
+            if (!cantBeCalculated) {
+                cantBeCalculated = _element.classList.contains(cssClass);
+            }
+        });
+       
+        return cantBeCalculated;
+    }
+
+    function _allChildHasZeroClientHeight(_element){
+        if (!_element.children || _element.children===0){
+            return true;
+        }
+
+        var result = true;
+        [].forEach.call(_element.children, function(node){
+
+            if (!result){
+                return;
+            }
+
+           if (node.clientHeight!==0) {
+               result = false;
+               return;
+           }
+
+           if (!result && node.children && node.children.length){
+                result = _allChildHasZeroClientHeight(node);
+            }
+        });
+
+        return result;
+    }
+
+    function _getRealArticleHeight(_element) {
+
+        if (!_element) {
+            return;
+        }
+
+        if (_hasAddInside(_element)){
+            return;
+        }
+
+        var height = _element.clientHeight + _getMargin(_element, 'bottom') + _getMargin(_element, 'top');
+
+        if (!height){
+            return;
+        }
+
+        if ( ((_element.children && _element.children.length === 0) || _allChildHasZeroClientHeight(_element)) && height !== 0) {
+            articleHeight+=height;
+            return;
+        }
+
+        [].forEach.call(_element.children, function (node) {
+            _getRealArticleHeight(node);
+        });
+
+        return height;
+    }
+
+    function _allChildHasZeroClientWidth(_element){
+        if (!_element.children || _element.children===0){
+            return _element.clientWidth===0;
+        }
+
+        var result = false;
+        [].forEach.call(_element.children, function(node){
+            if (!result && node.clientWidth===0){
+                result = true;
+            } else if (!result && node.children && node.children.length){
+                result = _allChildHasZeroClientWidth(node);
+            }
+        });
+
+        return result;
+    }
+
+    function _getRealArticleWidth(_element){
+
+        if (!_element) {
+            return;
+        }
+
+        var height = _element.clientWidth + _getMargin(_element, 'left') + _getMargin(_element, 'right');
+
+        if (!height){
+            return;
+        }
+
+        if ( ((_element.children && _element.children.length === 0) || _allChildHasZeroClientWidth(_element))
+            && height !== 0
+            && (['P', 'PRE', 'BLOCKQUOTE', 'H1','H2','H3','H4','H5','H6', ].indexOf(_element.tagName)!=-1 )) {
+
+            if ( articleWidth<=height){
+                articleWidth=height;
+            }
+
+            return;
+        }
+
+        [].forEach.call(_element.children, function (node) {
+            _getRealArticleWidth(node);
+        });
+    }
+
     function _calculateArticleHeight() {
 
         if (!article) {
-            return
+            return;
         }
 
-        articleHeight = _getRealHeight(article);
 
+        _getRealArticleHeight(article);
+        _getRealArticleWidth(article);
+        //articleHeight = _getRealHeight(article);
         offsetHeightFrom = articleHeight * percentageFrom / 100;
         offsetHeightTo = articleHeight * percentageTo / 100;
 
-        console.log(articleHeight, offsetHeightFrom, offsetHeightTo);
+        console.log(articleHeight, articleWidth, offsetHeightFrom, offsetHeightTo);
     }
 
     _initMarketGidCompositeRootDiv();
