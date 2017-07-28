@@ -454,9 +454,10 @@ MarketGidBaseBlockC141665 = function (root_id, DR, fallback, containerId) {
             self.IV();
             self.TK.push("informerInit");
 
-            var loaded = false;
-
             self.informerInit = function () {
+                var element = parent.window.document.getElementById('MarketGidComposite' + self.id);
+                element.style.display = 'none';
+
                 parent.window.addEventListener('load', function(e) {
                     //parent.window.addEventListener("load", function(){
                     var loc = parent.window.document.location;
@@ -472,10 +473,8 @@ MarketGidBaseBlockC141665 = function (root_id, DR, fallback, containerId) {
                     smartInformerScript.src = url + "/dist/glued.informer.js";
                     (self.realRoot != undefined ? self.realRoot : self.root).parentNode.appendChild(smartInformerScript);
 
-                    var element = parent.window.document.getElementById('MarketGidComposite' + self.id);
-                    element.style.display = 'none';
-
                     smartInformerScript.onload = function () {
+
                         var d = new Date();
                         console.info('SmartInformerCreator start runing', d.getMinutes() + ':' + d.getSeconds() + ':' + d.getMilliseconds());
 

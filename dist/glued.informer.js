@@ -2302,11 +2302,11 @@ if (typeof module === "object") {
 
 function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentageTo) {
 
-    function isNumeric(n) {
+    function _isNumeric(n) {
         return !isNaN(parseFloat(n)) && isFinite(n);
     }
 
-    if (!isNumeric(_percentageFrom) || !isNumeric(_percentageTo)) {
+    if (!_isNumeric(_percentageFrom) || !_isNumeric(_percentageTo)) {
         console.error('SmartInformerCreator.constructor: Provided percentages must be numeric only.' +
             ' _percentageFrom: ' + _percentageFrom +
             ' _percentageTo: ' + _percentageTo + ' given');
@@ -2344,7 +2344,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
     var rootId = id;
     var marketGidCompositeId = smartInformerName + id;
     var smartInformer = document.getElementById(marketGidCompositeId);
-    smartInformer.parentNode.removeChild(smartInformer);
+        smartInformer.parentNode.removeChild(smartInformer);
 
     var percentageFrom = _percentageFrom === null || _percentageFrom === undefined ? 30 : _percentageFrom;
     var percentageTo = _percentageTo === null || _percentageTo === undefined ? 60 : _percentageTo;
@@ -2355,7 +2355,6 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
     var informerRootDiv;
     var offsetHeightFrom;
     var offsetHeightTo;
-
     var cumulativeGlobal = 0;
     var inserted = false;
     var cursor = {};
@@ -2617,38 +2616,41 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
 
         article = _extractArticle(articleParsed.rootElements, true, articleParsed.rootElements.length);
 
-        console.log(articleParsed.rootElements);
+        _handleSpecialCases();
+    }
 
-        /// workaround for https://farlofacile.com/ articles
+    /**
+     * If Readability.js return article with some structure.
+     * If the structure is correct - SmartInformerCreator
+     * will find correct place to paste informer to.
+     * Otherwise, you can adjust article extraction in method below
+     * or in method _extractArticle
+     *
+     * @returns {*}
+     * @private
+     */
+    function _handleSpecialCases(){
+
         if (article && article.parentNode && article.parentNode.children[0] && article.parentNode.children[0].tagName === 'HEADER') {
             article = article.parentNode;
+            return;
         }
 
-        /// workaround for https://dolartoday.com articles
-        if (article && article.id ==='wrap' && article.children[0].id ==='content') {
+        if (article && article.id === 'wrap' && article.children[0].id === 'content') {
             article = article.children[0];
+            return;
         }
 
-        // workaround for https://espana-diario.es
-        if (loc.host ==='espana-diario.es' ||loc.host ==='www.espana-diario.es' ||loc.host ==='localhost' || loc.host ==='192.168.0.225:8000'){
-            var logo = document.querySelector('a.logo.custom-logo-18');
-            if (logo && logo.href=== 'https://espana-diario.es/'){
-                article = document.getElementsByClassName('content_text')[0];
-            }
+        var logo = document.querySelector('a.logo.custom-logo-18');
+        if(logo) {
+            article = document.getElementsByClassName('content_text')[0];
+            return;
         }
 
-        // woraround for 4khdvideo
-        if (loc.host ==='4khdvideo.tv' ||loc.host ==='www.4khdvideo.tv' || loc.host ==='localhost' || loc.host ==='192.168.0.225:8000'){
-            var logo = document.querySelector('div#page-wrap > center> img[alt="4khdvideo"]');
-            if (logo && logo.alt=== '4khdvideo'){
-                article = document.getElementsByClassName('detail-left-side')[0];
-            }
-        }
-
-        if (!article) {
-            console.error('SmartInformerCreator._parseArticle: Article In DOM not recognized');
-        } else {
-            return article;
+        logo = document.querySelector('div#page-wrap > center>img');
+        if (logo) {
+            article = document.getElementsByClassName('detail-left-side')[0];
+            return;
         }
 
         if (articleParsed.rootElements && Array.isHTMLCollection(articleParsed.rootElements)) {
@@ -2661,13 +2663,20 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
                 }
             });
         }
+        console.log(article);
+        if (article) {
+            return;
+        }
 
+        console.error('SmartInformerCreator._parseArticle: Article In DOM not recognized');
     }
 
     function _isSuitableWidth(width) {
-        if (articleWidth === 0 &&self.articleAcceptedWidth ){
+
+        if (articleWidth === 0 && self.articleAcceptedWidth) {
             return true;
         }
+
         return width <= articleWidth && self.articleAcceptedWidth <= width;
     }
 
@@ -2677,9 +2686,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
             return element;
         }
 
-        //console.log(_isSuitableWidth(_getRealWidth(element.parentNode)));
         if (_isSuitableWidth(_getRealWidth(element.parentNode))) {
-
 
             var _childWithSuitableWidth = _getChildWithSuitableWidth(element.parentNode);
 
@@ -2713,12 +2720,13 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         return _isSuitableWidth(_getRealWidth(element.children[0])) ? element.children[0] : null;
     }
 
-    function _getNexNode(element){
-         var nextNodeIndex = Array.prototype.indexOf.call(element.parentNode.children, element);
-         var nextNode = element.parentNode.children[nextNodeIndex + 1];
+    function _getNexNode(element) {
+        var nextNodeIndex = Array.prototype.indexOf.call(element.parentNode.children, element);
+        var nextNode = element.parentNode.children[nextNodeIndex + 1];
 
-         return nextNode && ! nextNode.clientHeight ? _getNexNode(nextNode) : nextNode;
+        return nextNode && !nextNode.clientHeight ? _getNexNode(nextNode) : nextNode;
     }
+
     /**
      * Insert informer to DOM
      *
@@ -2742,7 +2750,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         }
 
         var before = _before || false;
-        var nextNode =_getNexNode(element);
+        var nextNode = _getNexNode(element);
 
 
         if (_hasChildTags(element, ['FIGURE', 'IMG', 'TABLE', 'IFRAME', 'TIME', 'CODE'])) {
@@ -2768,7 +2776,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
             // find parent with suitable width
             var suitableNode = _findClosestSuitableNode(element);
 
-            if(suitableNode.parentNode) {
+            if (suitableNode.parentNode) {
                 suitableNode.parentNode.insertBefore(informerRootDiv, suitableNode);
             } else {
                 element.parentNode.insertBefore(informerRootDiv, before ? element : element.nextSibling);
@@ -2777,8 +2785,6 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
             _endInsert(smartInformer);
             return;
         }
-
-
 
         if (['H1', 'H2', 'H3', 'H4', 'H5', 'H6'].indexOf(element.tagName) != -1 || _hasSpecialNextElement(nextNode, ['UL', 'OL'])) {
             if (typeof nextNode.nextSibling != 'undefined') {
@@ -2803,20 +2809,17 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
 
         _endInsert(smartInformer);
     }
-    function _endInsert(smartInformer){
+
+    function _endInsert(smartInformer) {
         informerRootDiv = document.getElementById(informerRootDiv.id);
         informerRootDiv.appendChild(smartInformer);
         inserted = true;
     }
-    /**
-     * You MUST insert informer block after image
-     */
-    function _hasSpecialNextElement(nextNode, specialTags) {
 
-        var result = (typeof nextNode != 'undefined')
+    function _hasSpecialNextElement(nextNode, specialTags) {
+        return  (typeof nextNode != 'undefined')
             && (specialTags.indexOf(nextNode.tagName) != -1)
             || _hasChildTags(nextNode, specialTags);
-        return result;
     }
 
     function _hasChildTags(node, tags) {
@@ -2972,7 +2975,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
             return _elementClientWidth;
         }
 
-        if (! _element.children ) {
+        if (!_element.children) {
             return _elementClientWidth;
         }
 
@@ -3002,9 +3005,9 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         try {
             var style = _element.currentStyle || window.getComputedStyle(_element);
             var margin = style['margin' + _capitalizeFirstLetter(direction.toLowerCase())].replace('px', '');
-            return isNumeric(margin) ? parseInt(margin) : 0;
-        }catch(e){
-          console.error(e);
+            return _isNumeric(margin) ? parseInt(margin) : 0;
+        } catch (e) {
+            console.error(e);
             return 0;
         }
     }
@@ -3160,15 +3163,15 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
 
     var cssClasses = ['comments', 'related', 'share', 'at-share-btn-elements'];
     var ids = ['ad-space', 'fb_comments_div', 'ad-space', 'div-gpt-ad',
-        'MarketGidScript','MarketGidScriptRoot',  'disqus_comments_div',
+        'MarketGidScript', 'MarketGidScriptRoot', 'disqus_comments_div',
         'ScriptRoot', 'Preload', 'MarketGidComposite', 'SC_TBlock'];
 
     function _hasAddInside(_element) {
         var cantBeCalculated = false;
 
         ids.forEach(function (id) {
-           if(!cantBeCalculated) {
-               cantBeCalculated = _element.id.includes(id)
+            if (!cantBeCalculated) {
+                cantBeCalculated = _element.id.includes(id)
             }
         });
 
@@ -3177,28 +3180,28 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
                 cantBeCalculated = _element.classList.contains(cssClass);
             }
         });
-       
+
         return cantBeCalculated;
     }
 
-    function _allChildHasZeroClientHeight(_element){
-        if (!_element.children || _element.children===0){
+    function _allChildHasZeroClientHeight(_element) {
+        if (!_element.children || _element.children === 0) {
             return true;
         }
 
         var result = true;
-        [].forEach.call(_element.children, function(node){
+        [].forEach.call(_element.children, function (node) {
 
-            if (!result){
+            if (!result) {
                 return;
             }
 
-           if (node.clientHeight!==0) {
-               result = false;
-               return;
-           }
+            if (node.clientHeight !== 0) {
+                result = false;
+                return;
+            }
 
-           if (!result && node.children && node.children.length){
+            if (!result && node.children && node.children.length) {
                 result = _allChildHasZeroClientHeight(node);
             }
         });
@@ -3212,18 +3215,18 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
             return;
         }
 
-        if (_hasAddInside(_element)){
+        if (_hasAddInside(_element)) {
             return;
         }
 
         var height = _element.clientHeight + _getMargin(_element, 'bottom') + _getMargin(_element, 'top');
 
-        if (!height){
+        if (!height) {
             return;
         }
 
-        if ( ((_element.children && _element.children.length === 0) || _allChildHasZeroClientHeight(_element)) && height !== 0) {
-            articleHeight+=height;
+        if (((_element.children && _element.children.length === 0) || _allChildHasZeroClientHeight(_element)) && height !== 0) {
+            articleHeight += height;
             return;
         }
 
@@ -3234,16 +3237,16 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         return height;
     }
 
-    function _allChildHasZeroClientWidth(_element){
-        if (!_element.children || _element.children===0){
-            return _element.clientWidth===0;
+    function _allChildHasZeroClientWidth(_element) {
+        if (!_element.children || _element.children === 0) {
+            return _element.clientWidth === 0;
         }
 
         var result = false;
-        [].forEach.call(_element.children, function(node){
-            if (!result && node.clientWidth===0){
+        [].forEach.call(_element.children, function (node) {
+            if (!result && node.clientWidth === 0) {
                 result = true;
-            } else if (!result && node.children && node.children.length){
+            } else if (!result && node.children && node.children.length) {
                 result = _allChildHasZeroClientWidth(node);
             }
         });
@@ -3251,7 +3254,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         return result;
     }
 
-    function _getRealArticleWidth(_element){
+    function _getRealArticleWidth(_element) {
 
         if (!_element) {
             return;
@@ -3259,16 +3262,16 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
 
         var height = _element.clientWidth + _getMargin(_element, 'left') + _getMargin(_element, 'right');
 
-        if (!height){
+        if (!height) {
             return;
         }
 
-        if ( ((_element.children && _element.children.length === 0) || _allChildHasZeroClientWidth(_element))
+        if (((_element.children && _element.children.length === 0) || _allChildHasZeroClientWidth(_element))
             && height !== 0
-            && (['P', 'PRE', 'BLOCKQUOTE', 'H1','H2','H3','H4','H5','H6', ].indexOf(_element.tagName)!=-1 )) {
+            && (['P', 'PRE', 'BLOCKQUOTE', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6',].indexOf(_element.tagName) != -1 )) {
 
-            if ( articleWidth<=height){
-                articleWidth=height;
+            if (articleWidth <= height) {
+                articleWidth = height;
             }
 
             return;
@@ -3285,14 +3288,13 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
             return;
         }
 
-
         _getRealArticleHeight(article);
         _getRealArticleWidth(article);
-        //articleHeight = _getRealHeight(article);
+
         offsetHeightFrom = articleHeight * percentageFrom / 100;
         offsetHeightTo = articleHeight * percentageTo / 100;
 
-        console.log(articleHeight, articleWidth, offsetHeightFrom, offsetHeightTo);
+        console.log(articleHeight, articleWidth, offsetHeightFrom, offsetHeightTo );
     }
 
     _initMarketGidCompositeRootDiv();
