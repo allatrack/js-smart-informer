@@ -7,13 +7,14 @@
  * @returns {{create: _initiateCreating}}
  * @constructor
  */
+
 function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentageTo) {
 
-    function isNumeric(n) {
+    function _isNumeric(n) {
         return !isNaN(parseFloat(n)) && isFinite(n);
     }
 
-    if (!isNumeric(_percentageFrom) || !isNumeric(_percentageTo)) {
+    if (!_isNumeric(_percentageFrom) || !_isNumeric(_percentageTo)) {
         console.error('SmartInformerCreator.constructor: Provided percentages must be numeric only.' +
             ' _percentageFrom: ' + _percentageFrom +
             ' _percentageTo: ' + _percentageTo + ' given');
@@ -47,24 +48,39 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         console.error('SmartInformerCreator.constructor: _percentageFrom > _percentageTo. This must be _percentageFrom < _percentageTo');
     }
 
+    var self = this;
     var rootId = id;
-    var marketGidCompositeId = smartInformerName+id;
+    var marketGidCompositeId = smartInformerName + id;
     var smartInformer = document.getElementById(marketGidCompositeId);
     smartInformer.parentNode.removeChild(smartInformer);
 
     var percentageFrom = _percentageFrom === null || _percentageFrom === undefined ? 30 : _percentageFrom;
     var percentageTo = _percentageTo === null || _percentageTo === undefined ? 60 : _percentageTo;
     var articleHeight = 0;
+    var articleWidth = 0;
     var articleParsed;
     var article;
     var informerRootDiv;
     var offsetHeightFrom;
     var offsetHeightTo;
+    var cumulativeGlobal = 0;
+    var inserted = false;
+    var cursor = {};
+
+    Object.defineProperties(this, {
+        articleAcceptedWidth: {get: function () {return articleWidth - (articleWidth * 20 / 100);}},
+    });
+
+    Object.defineProperties(cursor, {
+        beforeGoal: {get: function () {return cumulativeGlobal === 0 || cumulativeGlobal <= offsetHeightFrom;}},
+        neededGoal: {get: function () {return cumulativeGlobal >= offsetHeightFrom && cumulativeGlobal <= offsetHeightTo;}},
+        afterGoal: {get: function () { return cumulativeGlobal >= offsetHeightTo || cumulativeGlobal <= articleHeight;}}
+    });
 
     function _initMarketGidCompositeRootDiv() {
 
         informerRootDiv = document.createElement('div');
-        informerRootDiv.id = smartInformerName +'Root' + rootId;
+        informerRootDiv.id = smartInformerName + 'Root' + rootId;
         informerRootDiv.classList.add('yui3-cssreset');
 
         // reset all the styles of the informerRootDiv
@@ -229,7 +245,6 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         if (node['id']) {
 
             var nodeInDom = document.getElementById(node['id']);
-
             return nodeInDom ? nodeInDom.parentNode : null;
 
             // try to find article body by css class
@@ -246,57 +261,44 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         }
     }
 
-    function _extractArticle(node) {
+    function _extractArticle(node, _firstCall, _collectionLength) {
 
-        var result = null;
 
-        if (node.length) {
+        var firstCall = _firstCall || false;
+        var collectionLength = _collectionLength || 0;
 
-            // article consists of  more than one element
-            [].forEach.call(node, function (element) {
-                result = getArticleParent(element);
-            })
-        } else {
-            result = getArticleParent(element);
-        }
+        if (node[0] && firstCall && collectionLength === 1) {
+            var fn = node[0];
+            if (fn['id']) {
+                return document.getElementById(fn['id']);
 
-        return result;
-    }
+                // try to find article body by css class
+            } else if (fn.classList && fn.classList.length) {
 
-    function _setCookie(name, value, options) {
-        options = options || {};
+                var classes = [];
+                [].forEach.call(fn.classList, function (className) { classes.push(className); });
 
-        var expires = options.expires;
-
-        if (typeof expires == "number" && expires) {
-            var d = new Date();
-            d.setTime(d.getTime() + expires * 1000);
-            expires = options.expires = d;
-        }
-        if (expires && expires.toUTCString) {
-            options.expires = expires.toUTCString();
-        }
-
-        value = encodeURIComponent(value);
-
-        var updatedCookie = name + "=" + value;
-
-        for (var propName in options) {
-            updatedCookie += "; " + propName;
-            var propValue = options[propName];
-            if (propValue !== true) {
-                updatedCookie += "=" + propValue;
+                return document.querySelector(fn.tagName + '.' + classes.join('.')).parentNode;
+            } else {
+                console.warn('SmartInformerCreator._extractArticle: ' +
+                    'Cant select element from read DOM by using node -' + fn.tagName);
+                return null;
             }
         }
 
-        document.cookie = updatedCookie;
-    }
+        var result = null;
 
-    function _getCookie(name) {
-        var matches = document.cookie.match(new RegExp(
-            "(?:^|; )" + name.replace(/([\.$?*|{}\(\)\[\]\\\/\+^])/g, '\\$1') + "=([^;]*)"
-        ));
-        return matches ? decodeURIComponent(matches[1]) : undefined;
+        if (Array.isHTMLCollection(node) && node.length) {
+
+            // article consists of  more than one element
+            [].forEach.call(node, function (element) {
+                result = getArticleParent(element, true);
+            })
+        } else {
+            result = getArticleParent(node);
+        }
+
+        return result;
     }
 
     function _parseArticle() {
@@ -306,17 +308,6 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         // You could avoid this by passing the clone of the
         // document object while creating a Readability object.
         var loc = document.location;
-        //var cachedArticle = _getCookie(loc.href);
-        //
-        ////var d =new Date();
-        ////console.info('start parsing' ,d.getMilliseconds());
-        //
-        //if (cachedArticle){
-        //
-        //    article = getArticleParent(JSON.parse(cachedArticle));
-        //    //console.info('end parsing' , d.getMilliseconds());
-        //    return;
-        //}
 
         /**
          * Parse and get copy of the article from real DOM
@@ -331,22 +322,147 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
             pathBase: loc.protocol + "//" + loc.host + loc.pathname.substr(0, loc.pathname.lastIndexOf("/") + 1)
         }, document.cloneNode(true)).parse();
 
-        article = _extractArticle(articleParsed.rootElements);
+        article = _extractArticle(articleParsed.rootElements, true, articleParsed.rootElements.length);
 
-        var child = article.children[0];
-        var cache = {
-            id: child.id || null,
-            classList: Array.prototype.slice.call(child.classList),
-        };
+        _handleSpecialCases();
+    }
 
-        _setCookie(loc.href, JSON.stringify(cache), {expires: 1000});
+    /**
+     * If Readability.js return article with some structure.
+     * If the structure is correct - SmartInformerCreator
+     * will find correct place to paste informer to.
+     * Otherwise, you can adjust article extraction in method below
+     * or in method _extractArticle
+     *
+     * @returns {*}
+     * @private
+     */
+    function _handleSpecialCases(){
 
-        //d = new Date();
-        //console.info('end parsing' , d.getMilliseconds());
-
-        if (!article) {
-            console.error('SmartInformerCreator._parseArticle: Article In DOM not recognized');
+        if (article && article.parentNode && article.parentNode.children[0] && article.parentNode.children[0].tagName === 'HEADER') {
+            article = article.parentNode;
+            return;
         }
+
+        if (article && article.id === 'wrap' && article.children[0].id === 'content') {
+            article = article.children[0];
+            return;
+        }
+
+        var logo = document.querySelector('a.logo.custom-logo-18');
+        if(logo) {
+            article = document.getElementsByClassName('content_text')[0];
+            return;
+        }
+
+        logo = document.querySelector('div#page-wrap > center>img');
+        if (logo) {
+            article = document.getElementsByClassName('detail-left-side')[0];
+            return;
+        }
+
+
+        if  (article){
+            var articleInStructure = null;
+            var found = false;
+            [
+                'div.td-pb-row > div.td-pb-span8.td-main-content > div.td-ss-main-content > article',
+                'div.entry-content'
+            ].forEach(function(selector){
+
+                if (found){
+                    return;
+                }
+
+                articleInStructure= article.querySelector(selector);
+
+                if (articleInStructure){
+                    article = articleInStructure;
+                    found =true;
+                }
+            });
+
+            if (found) return;
+        }
+
+        if (article && article.classList.contains('post-body') && article.classList.contains('entry-content')){
+            article= article.parentNode;
+            return;
+        }
+
+
+        if (article === null && articleParsed.rootElements && Array.isHTMLCollection(articleParsed.rootElements)) {
+            [].forEach.call(articleParsed.rootElements, function (e) {
+                if (e.tagName === 'ARTICLE') {
+                    article = document.querySelector(e.tagName);
+                } else {
+                    console.info('SmartInformerCreator._parseArticle: Cant parse article. ' +
+                        'You should add this new condition to the code');
+                }
+            });
+        }
+
+        if (article) {
+            return;
+        }
+
+        console.error('SmartInformerCreator._parseArticle: Article In DOM not recognized');
+    }
+
+    function _isSuitableWidth(width) {
+
+        if (articleWidth === 0 && self.articleAcceptedWidth) {
+            return true;
+        }
+
+        return width <= articleWidth && self.articleAcceptedWidth <= width;
+    }
+
+    function _findClosestSuitableNode(element) {
+
+        if (!element || !element.parentNode) {
+            return element;
+        }
+
+        if (_isSuitableWidth(_getRealWidth(element.parentNode))) {
+
+            var _childWithSuitableWidth = _getChildWithSuitableWidth(element.parentNode);
+
+            if (_childWithSuitableWidth) {
+                return _childWithSuitableWidth;
+            }
+
+            return element.parentNode;
+        }
+
+        return _findClosestSuitableNode(element.parentNode);
+    }
+
+    function _getChildWithSuitableWidth(element) {
+
+        if (!element.children) {
+
+            console.warn('SmartInformerCreator._getChildWithSuitableWidth: ' +
+                'Children were waited but, ' + typeof element.children + 'given');
+            return null;
+        }
+
+        var result = null;
+        if (element.children) {
+            [].forEach.call(element.children, function (node) {
+                (!result) && (result = _isSuitableWidth(_getRealWidth(node)) ? node : null);
+            });
+            return result;
+        }
+
+        return _isSuitableWidth(_getRealWidth(element.children[0])) ? element.children[0] : null;
+    }
+
+    function _getNexNode(element) {
+        var nextNodeIndex = Array.prototype.indexOf.call(element.parentNode.children, element);
+        var nextNode = element.parentNode.children[nextNodeIndex + 1];
+
+        return nextNode && !nextNode.clientHeight ? _getNexNode(nextNode) : nextNode;
     }
 
     /**
@@ -372,14 +488,12 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         }
 
         var before = _before || false;
-        var nextNodeIndex = Array.prototype.indexOf.call(element.parentNode.children, element);
-        var nextNode = element.parentNode.children[nextNodeIndex + 1];
+        var nextNode = _getNexNode(element);
 
 
-        if (_hasChildTags(element,  ['FIGURE', 'IMG', 'TABLE', 'IFRAME', 'TIME', 'CODE'])) {
-
+        if (_hasChildTags(element, ['FIGURE', 'IMG', 'TABLE', 'IFRAME', 'TIME', 'CODE'])) {
             // todo: Provide for going down to paste in
-            element.parentNode.insertBefore(informerRootDiv,  element.nextSibling);
+            element.parentNode.insertBefore(informerRootDiv, element.nextSibling);
 
             informerRootDiv = document.getElementById(informerRootDiv.id);
             informerRootDiv.appendChild(smartInformer);
@@ -387,8 +501,30 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
             return;
         }
 
-        if (['H1', 'H2', 'H3', 'H4', 'H5','H6'].indexOf(element.tagName)!=-1 || _hasSpecialNextElement(nextNode, ['UL', 'OL'])) {
+        if (_hasChildWithClass(nextNode, ['SC_TBlock', 'fb_iframe_widget', 'twitter-tweet-button', 'adsbygoogle'])) {
+            _insert(nextNode, false);
+            return;
+        }
 
+        //if there is smaller width than article's, - accept
+        //10% lower than articles actual width
+        if (element.tagName!=='IMG' && !_isSuitableWidth(element.clientWidth) || element.className.indexOf('size-full')!=-1 && !_isSuitableWidth(element.clientWidth)) {
+
+
+            // find parent with suitable width
+            var suitableNode = _findClosestSuitableNode(element);
+
+            if (suitableNode.parentNode) {
+                suitableNode.parentNode.insertBefore(informerRootDiv, suitableNode);
+            } else {
+                element.parentNode.insertBefore(informerRootDiv, before ? element : element.nextSibling);
+            }
+
+            _endInsert(smartInformer);
+            return;
+        }
+
+        if (['H1', 'H2', 'H3', 'H4', 'H5', 'H6'].indexOf(element.tagName) != -1 || _hasSpecialNextElement(nextNode, ['UL', 'OL'])) {
             if (typeof nextNode.nextSibling != 'undefined') {
                 element.parentNode.insertBefore(informerRootDiv, nextNode.nextSibling);
             } else {
@@ -403,21 +539,23 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
                 console.error('SmartInformerCreator._insert: Cant insert informer block after image - it does not exist');
             }
 
+        } else if (_hasChildTags(element, ['INS'])) {
+            element.parentNode.insertBefore(informerRootDiv, nextNode);
         } else {
             element.parentNode.insertBefore(informerRootDiv, before ? element : element.nextSibling);
         }
 
+        _endInsert(smartInformer);
+    }
+
+    function _endInsert(smartInformer) {
         informerRootDiv = document.getElementById(informerRootDiv.id);
         informerRootDiv.appendChild(smartInformer);
         inserted = true;
     }
 
-    /**
-     * You MUST insert informer block after image
-     */
     function _hasSpecialNextElement(nextNode, specialTags) {
-
-        return (typeof nextNode != 'undefined')
+        return  (typeof nextNode != 'undefined')
             && (specialTags.indexOf(nextNode.tagName) != -1)
             || _hasChildTags(nextNode, specialTags);
     }
@@ -458,8 +596,49 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         return result;
     }
 
-    function _getFirstChildByTag(node, tags){
-        if (!tags ) {
+    function _hasChildWithClass(node, tags) {
+
+        if (!tags || !tags.length) {
+            console.warn('SmartInformerCreator._hasChildWithClass: tags MUST NOT be empty array');
+            return false;
+        }
+
+        if (typeof node == 'undefined') {
+            return false;
+        }
+
+        if (!node.children || node.children.length === 0) {
+            return false;
+        }
+
+        var result = false;
+
+        [].forEach.call(node.children, function (_node) {
+
+            if (_node.children && _node.children.length > 0) {
+                [].forEach.call(_node.children, function (_node2) {
+                    if (!result) {
+                        result = _hasChildTags(_node2, tags);
+                    }
+                });
+            }
+
+            if (!result) {
+                tags.forEach(function (e) {
+
+                    if (!result) {
+                        result = _node.classList.contains(e);
+                    }
+                });
+            }
+
+        });
+
+        return result;
+    }
+
+    function _getFirstChildByTag(node, tags) {
+        if (!tags) {
             console.warn('SmartInformerCreator._getFirstChildByTag: - tag MUST NOT be empty array');
             return false;
         }
@@ -494,22 +673,14 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         return result;
     }
 
-    var cumulativeGlobal = 0;
-    var inserted = false;
-    var cursor = {};
-
-    Object.defineProperties(cursor, {
-        beforeGoal: {get: function () {return cumulativeGlobal === 0 || cumulativeGlobal <= offsetHeightFrom;}},
-        neededGoal: {get: function () {return cumulativeGlobal >= offsetHeightFrom && cumulativeGlobal <= offsetHeightTo;}},
-        afterGoal: {get: function () {return cumulativeGlobal >= offsetHeightTo || cumulativeGlobal <= articleHeight;}}
-    });
-
     function _getRealHeight(_element) {
+
+        if (!_element) {
+            return;
+        }
 
         var _elementClientHeight = _element.clientHeight;
 
-
-        //console.log(temp.replace("<br>", "\n"););
         if (_elementClientHeight) {
             return _elementClientHeight
         }
@@ -519,10 +690,40 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         }
 
         [].forEach.call(_element.children, function (node) {
-            _elementClientHeight = node.children ? _getRealHeight(node) : node.clientHeight+_getMargin(node, 'bottom') + _getMargin(node, 'top');
+            _elementClientHeight = node.children
+                ? _getRealHeight(node)
+                : node.clientHeight + _getMargin(node, 'bottom') + _getMargin(node, 'top');
         });
 
         return _elementClientHeight;
+    }
+
+    function _getRealWidth(_element) {
+        if (!_element) {
+            return;
+        }
+
+        var _elementClientWidth = _element.clientWidth;
+
+        if (_elementClientWidth) {
+            return _elementClientWidth;
+        }
+
+        if (_element.children && _element.children.length === 0 && _elementClientWidth === 0) {
+            return _elementClientWidth;
+        }
+
+        if (!_element.children) {
+            return _elementClientWidth;
+        }
+
+        [].forEach.call(_element.children, function (node) {
+            _elementClientWidth = node.children
+                ? _getRealWidth(node)
+                : node.clientWidth + _getRealWidth(node, 'left') + _getMargin(node, 'right');
+        });
+
+        return _elementClientWidth;
     }
 
     function _createIntoParentSibling(_el) {
@@ -533,14 +734,49 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         }
     }
 
-    function capitalizeFirstLetter(string) {
+    function _capitalizeFirstLetter(string) {
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
-    function _getMargin(_element, direction){
-        var style = _element.currentStyle || window.getComputedStyle(_element);
-        var margin = style['margin'+capitalizeFirstLetter(direction.toLowerCase())].replace('px','');
-        return isNumeric(margin) ? parseInt(margin): 0;
+    function _getTextNodeHeight(textNode) {
+        var height = 0;
+        if (document.createRange) {
+            var range = document.createRange();
+            range.selectNodeContents(textNode);
+            if (range.getBoundingClientRect) {
+                var rect = range.getBoundingClientRect();
+                if (rect) {
+                    height = rect.bottom - rect.top;
+                }
+            }
+        }
+        //console.log(height);
+        return height;
+    }
+
+    function _getMargin(_element, direction) {
+
+        try {
+            var style = _element.currentStyle || window.getComputedStyle(_element);
+            var margin = style['margin' + _capitalizeFirstLetter(direction.toLowerCase())].replace('px', '');
+            return _isNumeric(margin) ? parseInt(margin) : 0;
+        } catch (e) {
+            if (_element.nodeName==='#text'){
+                return _getTextNodeHeight(_element);
+            }
+            return 0;
+        }
+    }
+
+    function _getParentFontSize(_element){
+        var parent = _element.parentNode;
+        var style = _element.currentStyle || window.getComputedStyle(parent);
+        var fontSize = style.fontSize.replace('px', '');
+        var lineHeight = style.lineHeight.replace('px', '');
+        fontSize = _isNumeric(fontSize) ? parseInt(fontSize) : 0;
+        lineHeight = _isNumeric(lineHeight) ? parseInt(lineHeight) : 0;
+
+        return fontSize + lineHeight;
     }
 
     function _create(_element) {
@@ -549,21 +785,36 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
             return
         }
 
+        if (!_element) {
+            return;
+        }
+
+        if (_isAdd(_element)) {
+            return;
+        }
+
+
         if (_element.clientHeight === undefined) {
             return;
         }
 
-        var nodeClientRealHeight = _element.clientHeight == 0
-            ? _getRealHeight(_element)
-            : _element.clientHeight+_getMargin(_element, 'bottom') + _getMargin(_element, 'top') ;
+        //console.log(_isTextNode(_element));
+
+        if (_isTextNode(_element)) {
+            var nodeClientRealHeight = _getTextNodeHeight(_element);
+        } else {
+            var nodeClientRealHeight = _element.clientHeight == 0
+                ? _getRealHeight(_element)
+                : _element.clientHeight + _getMargin(_element, 'bottom') + _getMargin(_element, 'top');
+
+        }
 
         if (nodeClientRealHeight === 0) {
             return;
         }
 
         cumulativeGlobal += nodeClientRealHeight;
-        // console.log(_element, cumulativeGlobal, nodeClientRealHeight);
-
+        //  console.log(_element, cumulativeGlobal, nodeClientRealHeight);
         if (cursor.beforeGoal) {
             return;
         }
@@ -595,7 +846,11 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
                 return;
             }
 
-            if (_element.tagName === 'LI') {
+            if (['LI', 'INS', 'IMG', 'TABLE'].indexOf(_element.tagName) != -1) {
+                if (_element.tagName ==='LI' && percentageFrom <= 10){
+                    _insert(_element, true);
+                    return;
+                }
                 _insert(_element.parentNode);
                 return;
             }
@@ -605,10 +860,10 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         }
 
         if (cursor.afterGoal) {
+
             cumulativeGlobal -= nodeClientRealHeight;
 
-            if (nodeClientRealHeight < articleHeight && ['IFRAME', 'IMG', 'FIGURE', 'TIME', 'CODE'].indexOf(_element.tagName) != -1) {
-
+            if (cumulativeGlobal + nodeClientRealHeight < articleHeight && ['IFRAME', 'IMG', 'FIGURE', 'TIME', 'CODE'].indexOf(_element.tagName) != -1) {
                 _insert(_element);
                 return;
             }
@@ -635,8 +890,15 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
                     return;
                 }
 
-                if (_hasChildTags(_element, ['IMG', 'FIGURE', 'IFRAME'])){
-                    _insert( _getFirstChildByTag(_element, ['IMG', 'FIGURE', 'IFRAME']) );
+                if (_hasChildTags(_element, ['IMG', 'FIGURE', 'IFRAME'])) {
+                    _insert(_getFirstChildByTag(_element, ['IMG', 'FIGURE', 'IFRAME']));
+                    return;
+                }
+
+
+                /// special case
+                if (percentageFrom >= 70 && cumulativeGlobal + nodeClientRealHeight <= articleHeight){
+                    _insert(_element);
                     return;
                 }
 
@@ -657,6 +919,11 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
 
     function _initiateCreating() {
 
+        if (!article) {
+            console.error('SmartInformerCreator._initiateCreating: Article cant be without any children');
+            return
+        }
+
         if (!article.children && !article.length) {
             console.error('SmartInformerCreator._initiateCreating: Article cant be without any children');
         }
@@ -676,19 +943,215 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         }
     }
 
+    var cssClasses = ['td-post-next-prev','adsb30', 'sadserver', 'adsbygoogle', 'fb-share-button', 'fb_iframe_widget',
+        'fb-comments','td_block_related_posts',
+        'td-post-sharing', 'td-post-sharing-top',
+        'sharing', 'shareaholic-ui', 'comments', 'related',
+        'share', 'at-share-btn-elements', 'post-footer'];
+
+    var ids = ['ad-space', 'fb_comments_div', 'ad-space', 'div-gpt-ad',
+        'MarketGidScript', 'MarketGidScriptRoot', 'disqus_comments_div',
+        'ScriptRoot', 'Preload', 'MarketGidComposite', 'SC_TBlock'];
+
+    function _isAdd(_element) {
+
+        var cantBeCalculated = false;
+
+        ids.forEach(function (id) {
+            if (!cantBeCalculated && _element.id) {
+
+                cantBeCalculated = _element.id.includes(id)
+            }
+
+            //if (_element.id && _element.id.includes(id)){
+            //    console.log('id ' +_element.id,  _element.id.includes(id));
+            //}
+        });
+
+        if (cantBeCalculated){
+            return true;
+        }
+
+        cssClasses.forEach(function (cssClass) {
+            if (!cantBeCalculated && _element.className) {
+
+                cantBeCalculated = _element.className.indexOf(cssClass) !=-1;
+
+                //if (_element.className &&_element.className.indexOf(cssClass) !=-1){
+                //    console.log('classList ' +_element.className, _element.className.indexOf(cssClass) !=-1)
+                //}
+            }
+        });
+
+        // special case
+        if (_element.children && _element.children[2] && _element.children[2].tagName==='INS' && _element.children[2].classList && _element.children[2].classList.contains('adsbygoogle')){
+            cantBeCalculated = true;
+        }
+
+
+
+        return cantBeCalculated;
+    }
+
+    function _isIE(){
+
+        return navigator.appName == 'Microsoft Internet Explorer'
+            || !!(navigator.userAgent.match(/Trident/)
+            || navigator.userAgent.match(/rv:11/));
+    }
+
+    function _allChildHasZeroClientHeight(_element) {
+        if (!_element.children || _element.children === 0) {
+            return true;
+        }
+
+        var result = true;
+        [].forEach.call(_element.children, function (node) {
+
+            if (!result) {
+                return;
+            }
+
+            if (node.clientHeight !== 0) {
+                result = false;
+                return;
+            }
+
+            if (!result && node.children && node.children.length) {
+                result = _allChildHasZeroClientHeight(node);
+            }
+        });
+
+        return result;
+    }
+
+    function _isTextNode(e){
+        return e.nodeType===Node.TEXT_NODE;
+    }
+
+    function _getRealArticleHeight(_element) {
+
+        if (!_element) {
+            return;
+        }
+
+        if (_element.tagName==='FOOTER') {
+            return;
+        }
+
+        if (_isAdd(_element)) {
+            return;
+        }
+
+        if (_isIE() && Object.prototype.toString.call(_element) === '[object Text]'){
+            if (_element.nodeValue.trim() ===''){
+                return 0;
+            }
+        }
+
+        var height = 0;
+
+        if (_isTextNode(_element)){
+            height+=_getTextNodeHeight(_element);
+        } else if (_element.tagName==='BR' && _element.nextSibling && _element.nextSibling.tagName==='BR' ){
+            // two br followed by each other means - one empty line
+            height+= _getParentFontSize(_element);
+        }else{
+            height+= _element.clientHeight + _getMargin(_element, 'bottom') + _getMargin(_element, 'top');
+        }
+
+        if (!height) {
+            return;
+        }
+
+        var hasNoChildrenNodes = _element.childNodes && _element.childNodes.length === 0;
+
+        if ((hasNoChildrenNodes || _allChildHasZeroClientHeight(_element)) && height !== 0) {
+            articleHeight += height;
+            return;
+        }
+
+        [].forEach.call(_element.childNodes, function (node) {
+            _getRealArticleHeight(node);
+        });
+    }
+
+    function _allChildHasZeroClientWidth(_element) {
+
+        if (!_element.children || _element.children === 0) {
+            return _element.clientWidth === 0;
+        }
+
+        var result = false;
+        [].forEach.call(_element.children, function (node) {
+
+            if (result){
+                return;
+            }
+
+            if (node.clientWidth === 0) {
+                result = true;
+            } else if (node.children && node.children.length) {
+                result = _allChildHasZeroClientWidth(node);
+            }
+        });
+
+        return result;
+    }
+
+    function _getRealArticleWidth(_element) {
+
+        if (!_element) {
+            return;
+        }
+
+        var height = _element.clientWidth + _getMargin(_element, 'left') + _getMargin(_element, 'right');
+
+        if (!height) {
+            return;
+        }
+
+        if (((_element.children && _element.children.length === 0) || _allChildHasZeroClientWidth(_element))
+            && height !== 0
+            && (['P', 'PRE', 'BLOCKQUOTE', 'H1', 'H2', 'H3', 'H4', 'H5', 'H6',].indexOf(_element.tagName) != -1 )) {
+
+            if (articleWidth <= height) {
+                articleWidth = height;
+            }
+
+            return;
+        }
+
+        if (!_element.children){
+            return;
+        }
+
+        [].forEach.call(_element.children, function (node) {
+            _getRealArticleWidth(node);
+        });
+    }
+
     function _calculateArticleHeight() {
 
-        articleHeight = _getRealHeight(article);
+        if (!article) {
+            return;
+        }
+
+        _getRealArticleHeight(article);
+        _getRealArticleWidth(article);
+
         offsetHeightFrom = articleHeight * percentageFrom / 100;
         offsetHeightTo = articleHeight * percentageTo / 100;
+
+        console.log(articleHeight, articleWidth, offsetHeightFrom, offsetHeightTo );
     }
 
     _initMarketGidCompositeRootDiv();
     _parseArticle();
     _calculateArticleHeight();
+
     // give public API method
     return {
         create: _initiateCreating
     }
 }
-
