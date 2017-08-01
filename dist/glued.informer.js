@@ -3301,7 +3301,6 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         offsetHeightFrom = articleHeight * percentageFrom / 100;
         offsetHeightTo = articleHeight * percentageTo / 100;
 
-        console.log(articleHeight, articleWidth, offsetHeightFrom, offsetHeightTo );
     }
 
     _initMarketGidCompositeRootDiv();
