@@ -25,9 +25,9 @@
 Тесты находятся в каталоге test_pages. Внутри название каждого каталога - название сайта. Тест нашего информера - smart_informer_test.html.   
 
 ### Важно!!! 
-Если вы измените файлы dist/pas-test.com.141665.js или dist/glued.informer.js и при этом захотите увидеть результат изменений на тестовых страницах, то необходимо перейдите в каталог test_pages и выполнить команду: 
+Если вы измените файлы dist/pas-test.com.141665.js или dist/glued.informer.js и при этом захотите увидеть результат изменений на тестовых страницах, то необходимо перейдите в каталог test_pages(test_pages_prod) и выполнить команду: 
 ```
 node prepare.js 
 ```
-Данная комманда возьмёт test_pages/template.html и положит туда файл содержимое test_pages/[имя веб сайта]/expected.html (это непосредственный контент, который должена вернуть библиотека [Readability.js](https://github.com/mozilla/readability)). После этого все будет сохранено в test_pages/[имя веб сайта]/smart_informer_test.html, где непосредственно и нужно смотреть результат.   
-При тестировании нужно настроить пути в файле test_pages/template.html и dist/pas-test.com.141665.js (метод start).
+Данная комманда возьмёт test_pages/template.html и положит туда файл содержимое test_pages/[имя веб сайта]/expected.html (это непосредственный контент, который должена вернуть библиотека [Readability.js](https://github.com/mozilla/readability)). После этого все будет сохранено в test_pages(test_pages_prod)/[имя веб сайта]/smart_informer_test.html, где непосредственно и нужно смотреть результат.   
+При тестировании нужно настроить пути в файле test_pages(test_pages_prod)/template.html и dist/pas-test.com.141665.js (метод start).
