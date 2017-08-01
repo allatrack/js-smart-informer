@@ -463,9 +463,9 @@ MarketGidBaseBlockC141665 = function (root_id, DR, fallback, containerId) {
                     var loc = parent.window.document.location;
                     // For github use
                     // var url = loc.protocol + "//" + loc.host + "/" + loc.pathname.split("/")[1];
+
                     // for local Server use
-                    var url;
-                    url = loc.protocol + "//" + loc.host;
+                    var url = loc.protocol + "//" + loc.host;
 
                     var smartInformerScript = parent.window.document.createElement('script');
                     smartInformerScript.type = 'text/javascript';
@@ -478,7 +478,7 @@ MarketGidBaseBlockC141665 = function (root_id, DR, fallback, containerId) {
                         var d = new Date();
                         console.info('SmartInformerCreator start runing', d.getMinutes() + ':' + d.getSeconds() + ':' + d.getMilliseconds());
 
-                        var mGInformer = new parent.window.SmartInformerCreator('MarketGidComposite', self.id, 70, 80);
+                        var mGInformer = new parent.window.SmartInformerCreator('MarketGidComposite', self.id, 10, 20);
                         mGInformer.create();
 
                         element.style.display = 'block';
@@ -486,7 +486,6 @@ MarketGidBaseBlockC141665 = function (root_id, DR, fallback, containerId) {
                         d = new Date();
                         console.info('SmartInformerCreator end runing', d.getMinutes() + ':' + d.getSeconds() + ':' + d.getMilliseconds());
                     }
-                    //);
                 })
             }
         }

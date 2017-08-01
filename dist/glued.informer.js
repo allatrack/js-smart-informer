@@ -2366,10 +2366,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
     Object.defineProperties(cursor, {
         beforeGoal: {get: function () {return cumulativeGlobal === 0 || cumulativeGlobal <= offsetHeightFrom;}},
         neededGoal: {get: function () {return cumulativeGlobal >= offsetHeightFrom && cumulativeGlobal <= offsetHeightTo;}},
-        afterGoal: {get: function () {
-
-
-            return cumulativeGlobal >= offsetHeightTo || cumulativeGlobal <= articleHeight;}}
+        afterGoal: {get: function () {return cumulativeGlobal >= offsetHeightTo || cumulativeGlobal <= articleHeight;}}
     });
 
     function _initMarketGidCompositeRootDiv() {
@@ -3015,22 +3012,6 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         return string.charAt(0).toUpperCase() + string.slice(1);
     }
 
-    function _getTextNodeHeight(textNode) {
-        var height = 0;
-        if (document.createRange) {
-            var range = document.createRange();
-            range.selectNodeContents(textNode);
-            if (range.getBoundingClientRect) {
-                var rect = range.getBoundingClientRect();
-                if (rect) {
-                    height = rect.bottom - rect.top;
-                }
-            }
-        }
-        //console.log(height);
-        return height;
-    }
-
     function _getMargin(_element, direction) {
 
         try {
@@ -3038,22 +3019,9 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
             var margin = style['margin' + _capitalizeFirstLetter(direction.toLowerCase())].replace('px', '');
             return _isNumeric(margin) ? parseInt(margin) : 0;
         } catch (e) {
-            if (_element.nodeName==='#text'){
-                return _getTextNodeHeight(_element);
-            }
+            console.error(e);
             return 0;
         }
-    }
-
-    function _getParentFontSize(_element){
-        var parent = _element.parentNode;
-        var style = _element.currentStyle || window.getComputedStyle(parent);
-        var fontSize = style.fontSize.replace('px', '');
-        var lineHeight = style.lineHeight.replace('px', '');
-        fontSize = _isNumeric(fontSize) ? parseInt(fontSize) : 0;
-        lineHeight = _isNumeric(lineHeight) ? parseInt(lineHeight) : 0;
-
-        return fontSize + lineHeight;
     }
 
     function _create(_element) {
@@ -3070,16 +3038,9 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
             return;
         }
 
-        //console.log(_isTextNode(_element));
-
-        if (_isTextNode(_element)) {
-            var nodeClientRealHeight = _getTextNodeHeight(_element);
-        } else {
-            var nodeClientRealHeight = _element.clientHeight == 0
-                    ? _getRealHeight(_element)
-                    : _element.clientHeight + _getMargin(_element, 'bottom') + _getMargin(_element, 'top');
-
-        }
+        var nodeClientRealHeight = _element.clientHeight == 0
+            ? _getRealHeight(_element)
+            : _element.clientHeight + _getMargin(_element, 'bottom') + _getMargin(_element, 'top');
 
         if (nodeClientRealHeight === 0) {
             return;
@@ -3133,7 +3094,8 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
 
             cumulativeGlobal -= nodeClientRealHeight;
 
-            if (cumulativeGlobal + nodeClientRealHeight < articleHeight && ['IFRAME', 'IMG', 'FIGURE', 'TIME', 'CODE'].indexOf(_element.tagName) != -1) {
+            if (nodeClientRealHeight < articleHeight && ['IFRAME', 'IMG', 'FIGURE', 'TIME', 'CODE'].indexOf(_element.tagName) != -1) {
+
                 _insert(_element);
                 return;
             }
@@ -3169,9 +3131,9 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
                 return;
             }
 
-            if (_element.childNodes && _element.childNodes.length) {
+            if (_element.children && _element.children.length) {
 
-                [].forEach.call(_element.childNodes, function (_e) {
+                [].forEach.call(_element.children, function (_e) {
                     _create(_e);
                 });
             } else {
@@ -3212,52 +3174,25 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         'ScriptRoot', 'Preload', 'MarketGidComposite', 'SC_TBlock'];
 
     function _hasAddInside(_element) {
-
-        // by default - thing that there cant be ads inside text node
-        if (_isTextNode(_element)){
-            return false;
-        }
-
         var cantBeCalculated = false;
 
         ids.forEach(function (id) {
-            if (!cantBeCalculated && _element.id) {
-                
-                try {
-                    cantBeCalculated = _element.id.includes(id)   
-                }catch(e){
-                  console.error(e);
-                }
-                
+            if (!cantBeCalculated) {
+                cantBeCalculated = _element.id.includes(id)
             }
         });
 
         cssClasses.forEach(function (cssClass) {
-            if (!cantBeCalculated && _element.classList) {
-                try {
-                    cantBeCalculated = _element.classList.contains(cssClass);
-                }catch(e){
-                    console.error(e);
-                }
+            if (!cantBeCalculated) {
+                cantBeCalculated = _element.classList.contains(cssClass);
             }
         });
-
-        if (_element.children && _element.children.length){
-            [].forEach.call(_element.children, function (node) {
-
-                if (cantBeCalculated) {
-                    return;
-                }
-
-                _hasAddInside(node);
-            });
-        }
 
         return cantBeCalculated;
     }
 
     function _allChildHasZeroClientHeight(_element) {
-        if ((!_element.children || _element.children.length === 0) && (!_element.childNodes || _element.childNodes.length === 0)) {
+        if (!_element.children || _element.children === 0) {
             return true;
         }
 
@@ -3278,27 +3213,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
             }
         });
 
-        [].forEach.call(_element.childNodes, function (node) {
-
-            if (!result) {
-                return;
-            }
-
-            if (_isTextNode(node) && _getTextNodeHeight(node) !== 0) {
-                result = false;
-                return;
-            }
-
-            if (!result && node.childNodes && node.childNodes.length) {
-                result = _allChildHasZeroClientHeight(node);
-            }
-        });
-
         return result;
-    }
-
-    function _isTextNode(e){
-        return e.nodeName==='#text';
     }
 
     function _getRealArticleHeight(_element) {
@@ -3311,41 +3226,18 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
             return;
         }
 
-        var height = 0;
-
-        if (_isTextNode(_element)){
-            height+=_getTextNodeHeight(_element);
-        } else if (_element.tagName==='BR' && _element.nextSibling && _element.nextSibling.tagName==='BR' ){
-            // two br followed by each other means - one empty line
-            height+= _getParentFontSize(_element);
-        }else{
-            height+= _element.clientHeight + _getMargin(_element, 'bottom') + _getMargin(_element, 'top');
-        }
+        var height = _element.clientHeight + _getMargin(_element, 'bottom') + _getMargin(_element, 'top');
 
         if (!height) {
             return;
         }
 
-        //var hasNoChildren = _element.children && _element.children.length === 0;
-        //
-        ////console.log(_element.innerText);
-        //if ((hasNoChildren  || _allChildHasZeroClientHeight(_element)) && height !== 0) {
-        //    articleHeight += height;
-        //    return;
-        //}
-        //
-        //[].forEach.call(_element.children, function (node) {
-        //    _getRealArticleHeight(node);
-        //});
-
-        var hasNoChildrenNodes = _element.childNodes && _element.childNodes.length === 0;
-
-        if ((hasNoChildrenNodes || _allChildHasZeroClientHeight(_element)) && height !== 0) {
+        if (((_element.children && _element.children.length === 0) || _allChildHasZeroClientHeight(_element)) && height !== 0) {
             articleHeight += height;
             return;
         }
 
-        [].forEach.call(_element.childNodes, function (node) {
+        [].forEach.call(_element.children, function (node) {
             _getRealArticleHeight(node);
         });
 
