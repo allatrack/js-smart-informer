@@ -337,7 +337,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
      * @returns {*}
      * @private
      */
-    function _handleSpecialCases(){
+    function _handleSpecialCases() {
 
         if (article && article.parentNode && article.parentNode.children[0] && article.parentNode.children[0].tagName === 'HEADER') {
             article = article.parentNode;
@@ -350,7 +350,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         }
 
         var logo = document.querySelector('a.logo.custom-logo-18');
-        if(logo) {
+        if (logo) {
             article = document.getElementsByClassName('content_text')[0];
             return;
         }
@@ -362,31 +362,31 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         }
 
 
-        if  (article){
+        if (article) {
             var articleInStructure = null;
             var found = false;
             [
                 'div.td-pb-row > div.td-pb-span8.td-main-content > div.td-ss-main-content > article',
                 'div.entry-content'
-            ].forEach(function(selector){
+            ].forEach(function (selector) {
 
-                if (found){
+                if (found) {
                     return;
                 }
 
-                articleInStructure= article.querySelector(selector);
+                articleInStructure = article.querySelector(selector);
 
-                if (articleInStructure){
+                if (articleInStructure) {
                     article = articleInStructure;
-                    found =true;
+                    found = true;
                 }
             });
 
             if (found) return;
         }
 
-        if (article && article.classList.contains('post-body') && article.classList.contains('entry-content')){
-            article= article.parentNode;
+        if (article && article.classList.contains('post-body') && article.classList.contains('entry-content')) {
+            article = article.parentNode;
             return;
         }
 
@@ -508,7 +508,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
 
         //if there is smaller width than article's, - accept
         //10% lower than articles actual width
-        if (element.tagName!=='IMG' && !_isSuitableWidth(element.clientWidth) || element.className.indexOf('size-full')!=-1 && !_isSuitableWidth(element.clientWidth)) {
+        if (element.tagName !== 'IMG' && !_isSuitableWidth(element.clientWidth) || element.className.indexOf('size-full') != -1 && !_isSuitableWidth(element.clientWidth)) {
 
 
             // find parent with suitable width
@@ -555,7 +555,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
     }
 
     function _hasSpecialNextElement(nextNode, specialTags) {
-        return  (typeof nextNode != 'undefined')
+        return (typeof nextNode != 'undefined')
             && (specialTags.indexOf(nextNode.tagName) != -1)
             || _hasChildTags(nextNode, specialTags);
     }
@@ -761,14 +761,14 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
             var margin = style['margin' + _capitalizeFirstLetter(direction.toLowerCase())].replace('px', '');
             return _isNumeric(margin) ? parseInt(margin) : 0;
         } catch (e) {
-            if (_element.nodeName==='#text'){
+            if (_element.nodeName === '#text') {
                 return _getTextNodeHeight(_element);
             }
             return 0;
         }
     }
 
-    function _getParentFontSize(_element){
+    function _getParentFontSize(_element) {
         var parent = _element.parentNode;
         var style = _element.currentStyle || window.getComputedStyle(parent);
         var fontSize = style.fontSize.replace('px', '');
@@ -781,43 +781,29 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
 
     function _create(_element) {
 
-        if (inserted) {
-            return
-        }
+        if (inserted) {return}
 
-        if (!_element) {
-            return;
-        }
+        if (!_element) {return;}
 
-        if (_isAdd(_element)) {
-            return;
-        }
+        if (_isAdd(_element)) {return;}
 
-
-        if (_element.clientHeight === undefined) {
-            return;
-        }
+        if (_element.clientHeight === undefined) {return;}
 
         //console.log(_isTextNode(_element));
-
+        var nodeClientRealHeight = 0;
         if (_isTextNode(_element)) {
-            var nodeClientRealHeight = _getTextNodeHeight(_element);
+            nodeClientRealHeight = _getTextNodeHeight(_element);
         } else {
-            var nodeClientRealHeight = _element.clientHeight == 0
+            nodeClientRealHeight = _element.clientHeight == 0
                 ? _getRealHeight(_element)
                 : _element.clientHeight + _getMargin(_element, 'bottom') + _getMargin(_element, 'top');
-
         }
 
-        if (nodeClientRealHeight === 0) {
-            return;
-        }
+        if (nodeClientRealHeight === 0) {return;}
 
         cumulativeGlobal += nodeClientRealHeight;
-        //  console.log(_element, cumulativeGlobal, nodeClientRealHeight);
-        if (cursor.beforeGoal) {
-            return;
-        }
+
+        if (cursor.beforeGoal) {return;}
 
         if (cursor.neededGoal) {
 
@@ -847,7 +833,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
             }
 
             if (['LI', 'INS', 'IMG', 'TABLE'].indexOf(_element.tagName) != -1) {
-                if (_element.tagName ==='LI' && percentageFrom <= 10){
+                if (_element.tagName === 'LI' && percentageFrom <= 10) {
                     _insert(_element, true);
                     return;
                 }
@@ -865,6 +851,12 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
 
             if (cumulativeGlobal + nodeClientRealHeight < articleHeight && ['IFRAME', 'IMG', 'FIGURE', 'TIME', 'CODE'].indexOf(_element.tagName) != -1) {
                 _insert(_element);
+                return;
+            }
+
+            if (( nodeClientRealHeight >= articleHeight || (cumulativeGlobal + nodeClientRealHeight) >= articleHeight)
+                && _element.children && _element.children.length) {
+                _goDownInTree(_element);
                 return;
             }
 
@@ -895,9 +887,8 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
                     return;
                 }
 
-
                 /// special case
-                if (percentageFrom >= 70 && cumulativeGlobal + nodeClientRealHeight <= articleHeight){
+                if (percentageFrom >= 70 && cumulativeGlobal + nodeClientRealHeight <= articleHeight) {
                     _insert(_element);
                     return;
                 }
@@ -906,14 +897,23 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
                 return;
             }
 
-            if (_element.children && _element.children.length) {
+            _goDownInTree(_element)
+        }
+    }
 
-                [].forEach.call(_element.children, function (_e) {
-                    _create(_e);
-                });
-            } else {
-                _createIntoParentSibling(_element);
-            }
+    function _goDownInTree(_element) {
+
+        if (!_element){
+            return;
+        }
+
+        if (_element.children && _element.children.length) {
+
+            [].forEach.call(_element.children, function (_e) {
+                _create(_e);
+            });
+        } else {
+            _createIntoParentSibling(_element);
         }
     }
 
@@ -943,8 +943,10 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         }
     }
 
-    var cssClasses = ['td-post-next-prev','adsb30', 'sadserver', 'adsbygoogle', 'fb-share-button', 'fb_iframe_widget',
-        'fb-comments','td_block_related_posts',
+    var cssClasses = ['native_ad', 'adds', 'td-post-next-prev',
+        'adsb30', 'sadserver', 'adsbygoogle',
+        'fb-share-button', 'fb_iframe_widget',
+        'fb-comments', 'td_block_related_posts',
         'td-post-sharing', 'td-post-sharing-top',
         'sharing', 'shareaholic-ui', 'comments', 'related',
         'share', 'at-share-btn-elements', 'post-footer'];
@@ -962,38 +964,27 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
 
                 cantBeCalculated = _element.id.includes(id)
             }
-
-            //if (_element.id && _element.id.includes(id)){
-            //    console.log('id ' +_element.id,  _element.id.includes(id));
-            //}
         });
 
-        if (cantBeCalculated){
+        if (cantBeCalculated) {
             return true;
         }
 
         cssClasses.forEach(function (cssClass) {
             if (!cantBeCalculated && _element.className) {
-
-                cantBeCalculated = _element.className.indexOf(cssClass) !=-1;
-
-                //if (_element.className &&_element.className.indexOf(cssClass) !=-1){
-                //    console.log('classList ' +_element.className, _element.className.indexOf(cssClass) !=-1)
-                //}
+                cantBeCalculated = _element.className.indexOf(cssClass) != -1;
             }
         });
 
         // special case
-        if (_element.children && _element.children[2] && _element.children[2].tagName==='INS' && _element.children[2].classList && _element.children[2].classList.contains('adsbygoogle')){
+        if (_element.children && _element.children[2] && _element.children[2].tagName === 'INS' && _element.children[2].classList && _element.children[2].classList.contains('adsbygoogle')) {
             cantBeCalculated = true;
         }
-
-
 
         return cantBeCalculated;
     }
 
-    function _isIE(){
+    function _isIE() {
 
         return navigator.appName == 'Microsoft Internet Explorer'
             || !!(navigator.userAgent.match(/Trident/)
@@ -1025,8 +1016,8 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         return result;
     }
 
-    function _isTextNode(e){
-        return e.nodeType===Node.TEXT_NODE;
+    function _isTextNode(e) {
+        return e.nodeType === Node.TEXT_NODE;
     }
 
     function _getRealArticleHeight(_element) {
@@ -1035,7 +1026,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
             return;
         }
 
-        if (_element.tagName==='FOOTER') {
+        if (_element.tagName === 'FOOTER') {
             return;
         }
 
@@ -1043,21 +1034,21 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
             return;
         }
 
-        if (_isIE() && Object.prototype.toString.call(_element) === '[object Text]'){
-            if (_element.nodeValue.trim() ===''){
+        if (_isIE() && Object.prototype.toString.call(_element) === '[object Text]') {
+            if (_element.nodeValue.trim() === '') {
                 return 0;
             }
         }
 
         var height = 0;
 
-        if (_isTextNode(_element)){
-            height+=_getTextNodeHeight(_element);
-        } else if (_element.tagName==='BR' && _element.nextSibling && _element.nextSibling.tagName==='BR' ){
+        if (_isTextNode(_element)) {
+            height += _getTextNodeHeight(_element);
+        } else if (_element.tagName === 'BR' && _element.nextSibling && _element.nextSibling.tagName === 'BR') {
             // two br followed by each other means - one empty line
-            height+= _getParentFontSize(_element);
-        }else{
-            height+= _element.clientHeight + _getMargin(_element, 'bottom') + _getMargin(_element, 'top');
+            height += _getParentFontSize(_element);
+        } else {
+            height += _element.clientHeight + _getMargin(_element, 'bottom') + _getMargin(_element, 'top');
         }
 
         if (!height) {
@@ -1085,7 +1076,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         var result = false;
         [].forEach.call(_element.children, function (node) {
 
-            if (result){
+            if (result) {
                 return;
             }
 
@@ -1122,7 +1113,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
             return;
         }
 
-        if (!_element.children){
+        if (!_element.children) {
             return;
         }
 
@@ -1143,7 +1134,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         offsetHeightFrom = articleHeight * percentageFrom / 100;
         offsetHeightTo = articleHeight * percentageTo / 100;
 
-        console.log(articleHeight, articleWidth, offsetHeightFrom, offsetHeightTo );
+        // console.log(articleHeight, articleWidth, offsetHeightFrom, offsetHeightTo);
     }
 
     _initMarketGidCompositeRootDiv();

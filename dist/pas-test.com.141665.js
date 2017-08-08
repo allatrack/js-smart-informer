@@ -474,18 +474,10 @@ MarketGidBaseBlockC141665 = function (root_id, DR, fallback, containerId) {
                     (self.realRoot != undefined ? self.realRoot : self.root).parentNode.appendChild(smartInformerScript);
 
                     smartInformerScript.onload = function () {
-
-                        var d = new Date();
-                        console.info('SmartInformerCreator start runing', d.getMinutes() + ':' + d.getSeconds() + ':' + d.getMilliseconds());
-
-                        var mGInformer = new parent.window.SmartInformerCreator('MarketGidComposite', self.id, 10, 20);
+                        var mGInformer = new parent.window.SmartInformerCreator('MarketGidComposite', self.id, 90, 99);
                         mGInformer.create();
-
                         element.style.display = 'block';
-
-                        d = new Date();
-                        console.info('SmartInformerCreator end runing', d.getMinutes() + ':' + d.getSeconds() + ':' + d.getMilliseconds());
-                    }
+                   }
                 })
             }
         }
