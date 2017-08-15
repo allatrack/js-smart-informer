@@ -1,0 +1,3 @@
+[submodule "test-pages"]
+	path = test-pages
+	url = git@github.com:peshkov3/test-pages.git

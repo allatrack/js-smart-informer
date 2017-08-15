@@ -370,9 +370,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
                 'div.entry-content'
             ].forEach(function (selector) {
 
-                if (found) {
-                    return;
-                }
+                if (found) {return;}
 
                 articleInStructure = article.querySelector(selector);
 
@@ -382,7 +380,7 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
                 }
             });
 
-            if (found) return;
+            if (found) {return;}
         }
 
         if (article && article.classList.contains('post-body') && article.classList.contains('entry-content')) {
@@ -679,10 +677,16 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
             return;
         }
 
-        var _elementClientHeight = _element.clientHeight;
+        var _elementClientHeight = 0;
+
+        if (_isTextNode(_element)) {
+            _elementClientHeight = _getTextNodeHeight(_element);
+        } else {
+            _elementClientHeight = _element.clientHeight;
+        }
 
         if (_elementClientHeight) {
-            return _elementClientHeight
+            return _elementClientHeight + _getMargin(_element, 'bottom') + _getMargin(_element, 'top')
         }
 
         if (_element.children && _element.children.length === 0 && _elementClientHeight === 0) {
@@ -700,6 +704,10 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
 
     function _getRealWidth(_element) {
         if (!_element) {
+            return;
+        }
+
+        if (_isAdd(_element)) {
             return;
         }
 
@@ -750,7 +758,6 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
                 }
             }
         }
-        //console.log(height);
         return height;
     }
 
@@ -789,14 +796,12 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
 
         if (_element.clientHeight === undefined) {return;}
 
-        //console.log(_isTextNode(_element));
         var nodeClientRealHeight = 0;
+
         if (_isTextNode(_element)) {
             nodeClientRealHeight = _getTextNodeHeight(_element);
         } else {
-            nodeClientRealHeight = _element.clientHeight == 0
-                ? _getRealHeight(_element)
-                : _element.clientHeight + _getMargin(_element, 'bottom') + _getMargin(_element, 'top');
+            nodeClientRealHeight = _getRealHeight(_element);
         }
 
         if (nodeClientRealHeight === 0) {return;}
@@ -1146,3 +1151,4 @@ function SmartInformerCreator(smartInformerName, id, _percentageFrom, _percentag
         create: _initiateCreating
     }
 }
+

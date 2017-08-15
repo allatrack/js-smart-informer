@@ -462,10 +462,10 @@ MarketGidBaseBlockC141665 = function (root_id, DR, fallback, containerId) {
                     //parent.window.addEventListener("load", function(){
                     var loc = parent.window.document.location;
                     // For github use
-                    //var url = loc.protocol + "//" + loc.host + "/" + loc.pathname.split("/")[1];
+                    var url = loc.protocol + "//" + loc.host + "/" + loc.pathname.split("/")[1];
 
                     // for local Server use
-                    var url = loc.protocol + "//" + loc.host;
+                    //var url = loc.protocol + "//" + loc.host;
 
                     var smartInformerScript = parent.window.document.createElement('script');
                     smartInformerScript.type = 'text/javascript';
