@@ -454,18 +454,42 @@ MarketGidBaseBlockC141665 = function (root_id, DR, fallback, containerId) {
             self.IV();
             self.TK.push("informerInit");
 
-            self.informerInit = function() {
+            self.informerInit = function () {
+
+              var element = parent.window.document.getElementById('MarketGidComposite' + self.id);
+              element.style.display = 'none';
+
+              function initWidget() {
+
+                //parent.window.addEven   tListener("load", function(){
+                var loc = parent.window.document.location;
+                // For github use
+                var url = loc.protocol + "//" + loc.host + "/" + loc.pathname.split("/")[1];
+
+                // for local Server use
+                // var url = loc.protocol + "//" + loc.host;
 
                 var smartInformerScript = parent.window.document.createElement('script');
                 smartInformerScript.type = 'text/javascript';
                 smartInformerScript.charset = 'utf-8';
-                smartInformerScript.src = "glued.informer.js";
+                smartInformerScript.src = url + "/dist/glued.informer.js";
                 (self.realRoot != undefined ? self.realRoot : self.root).parentNode.appendChild(smartInformerScript);
-
-                smartInformerScript.onload = function() {
-                    var mGInformer = new parent.window.SmartInformerCreator(self.id, 30, 50);
-                    mGInformer.init('MarketGidComposite'+self.id);
+                smartInformerScript.onload = function () {
+                  var mGInformer = new parent.window.SmartInformerCreator('MarketGidComposite', self.id, 90, 99);
+                  mGInformer.create();
+                  element.style.display = 'block';
                 }
+              }
+
+              if (parent.window.document.readyState === "complete") {
+                initWidget()
+              } else {
+                parent.window.document.addEventListener('readystatechange', function (e) {
+                  if (e.target.readyState == "complete") {
+                    initWidget()
+                  }
+                })
+              }
             }
         }
     };
